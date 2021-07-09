@@ -256,7 +256,7 @@ func _draw():
 		draw_line(icon_pos, icon_pos + last_motion * 50, Color.ORANGE, 1.5)
 	
 func util_on_floor():
-	return is_on_floor() or on_floor
+	return on_floor
 
 func get_state_str():
 	if on_ceiling: return "ceil"

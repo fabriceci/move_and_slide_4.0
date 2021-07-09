@@ -1,0 +1,16 @@
+3844edc3d1660e6e25a999aafc25a878
+::res://::1625833088
+default_env.tres::Environment::1625832881::0::1::::<><>::
+grid.png::StreamTexture2D::1625752294::1625752295::1::::<><>::
+icon.png::StreamTexture2D::1625647098::1625647114::1::::<><>::
+Main.gd::GDScript::1625832882::0::1::::<>Node2D<>::
+Main.tscn::PackedScene::1625832882::0::1::::<><>::res://Player/Current/Player.tscn<>res://Main.gd<>res://grid.png<>res://icon.png
+SourceCodePro-Regular.ttf::FontData::1625752298::0::1::::<><>::
+::res://Player/::1625826154
+Global.gd::GDScript::1625826154::0::1::::<>Node<>::
+::res://Player/Current/::1625826499
+Player.gd::GDScript::1625826499::0::1::::<>CharacterBody2D<>::
+Player.tscn::PackedScene::1625753107::0::1::::<><>::res://icon.png<>res://Player/Current/Player.gd
+::res://Player/New/::1625826467
+NewPlayer.tscn::PackedScene::1625753107::0::1::::<><>::res://icon.png<>res://Player/New/Player.gd
+Player.gd::GDScript::1625826467::0::1::::<>CharacterBody2D<>::

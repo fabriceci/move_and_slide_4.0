@@ -1,0 +1,17 @@
+Node2D
+AnimationPlayer
+CollisionShape2D
+CharacterBody2D
+TileMap
+StaticBody2D
+Label
+CheckButton
+ItemList
+Control
+CanvasLayer
+TextureRect
+CollisionPolygon2D
+Polygon2D
+Camera2D
+RayCast2D
+Sprite2D

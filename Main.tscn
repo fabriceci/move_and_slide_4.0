@@ -1,0 +1,320 @@
+[gd_scene load_steps=14 format=2]
+
+[ext_resource path="res://Player/Current/Player.tscn" type="PackedScene" id=1]
+[ext_resource path="res://Main.gd" type="Script" id=2]
+[ext_resource path="res://grid.png" type="Texture2D" id=3]
+[ext_resource path="res://icon.png" type="Texture2D" id=4]
+
+[sub_resource type="RectangleShape2D" id=1]
+size = Vector2(661.476, 65.4084)
+
+[sub_resource type="RectangleShape2D" id=2]
+size = Vector2(145, 145)
+
+[sub_resource type="RectangleShape2D" id=6]
+size = Vector2(500, 50)
+
+[sub_resource type="RectangleShape2D" id=7]
+size = Vector2(437.88, 62.7197)
+
+[sub_resource type="Animation" id=8]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/path = NodePath(".:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(0, 0)]
+}
+
+[sub_resource type="Animation" id=9]
+resource_name = "default"
+length = 2.0
+loop = true
+tracks/0/type = "value"
+tracks/0/path = NodePath(".:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 1, 2),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 0,
+"values": [Vector2(0, 0), Vector2(-200, 0), Vector2(0, 0)]
+}
+
+[sub_resource type="TileSetAtlasSource" id=3]
+texture = ExtResource( 4 )
+tile_size = Vector2i(64, 64)
+0:0/0 = 0
+
+[sub_resource type="TileSet" id=4]
+tile_size = Vector2i(64, 64)
+physics_layer_0/collision_layer = 1
+sources/0 = SubResource( 3 )
+
+[sub_resource type="CircleShape2D" id=5]
+radius = 70.0
+
+[node name="Main" type="Node2D"]
+script = ExtResource( 2 )
+
+[node name="TextureRect" type="TextureRect" parent="."]
+modulate = Color(0.282353, 0.282353, 0.282353, 1)
+texture_repeat = 2
+offset_left = -2500.0
+offset_top = -2500.0
+offset_right = 3500.0
+offset_bottom = 1500.0
+texture = ExtResource( 3 )
+expand = true
+stretch_mode = 2
+script = null
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Player" parent="." instance=ExtResource( 1 )]
+stop_on_slope = true
+
+[node name="Level" type="Node2D" parent="."]
+script = null
+__meta__ = {
+"_edit_lock_": true
+}
+
+[node name="Base" type="StaticBody2D" parent="Level"]
+script = null
+
+[node name="Polygon2D" type="Polygon2D" parent="Level/Base"]
+polygon = PackedVector2Array(-788.757, -301.137, -681.73, 439.132, -93.0829, 430.213, -102.002, 296.429, 31.7816, 296.429, -8.35339, 140.349, 103.133, 256.294, 317.186, 256.294, 714.077, 144.808, 803.266, 73.4568, 1097.59, 73.4568, 1378.53, 296.429, 1927.05, 300.889, 1915.05, 215.956, 2008.57, 215.956, 2005.11, 115.504, 2097.89, 118.717, 2106.54, 14.8889, 2206.04, 14.8889, 2361.79, 330.7, 2500.22, 309.069, 2868.74, 7.99219, 2670.7, -982.203, 931.975, -996.001, -1132.87, -609.252, -822.032, -270.571, -1657.28, -550.257, -1204.98, -1199.21, 695.993, -1205.76, 3101.7, -1205.76, 3377.01, -6.1864, 2846.05, 859.082, -1362.3, 872.192)
+polygons = []
+bones = []
+script = null
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="Level/Base"]
+script = null
+
+[node name="StaticPlatform" type="StaticBody2D" parent="Level"]
+script = null
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Level/StaticPlatform"]
+shape = SubResource( 1 )
+script = null
+
+[node name="icon" type="Sprite2D" parent="Level/StaticPlatform/CollisionShape2D"]
+visible = false
+modulate = Color(0, 0, 0, 1)
+scale = Vector2(10.3067, 1)
+texture = ExtResource( 4 )
+script = null
+
+[node name="CollisionShape2D2" type="CollisionShape2D" parent="Level/StaticPlatform"]
+position = Vector2(300, 0)
+rotation = 0.785398
+shape = SubResource( 2 )
+script = null
+
+[node name="icon" type="Sprite2D" parent="Level/StaticPlatform/CollisionShape2D2"]
+visible = false
+modulate = Color(0, 0, 0, 1)
+scale = Vector2(2.25052, 2.40684)
+texture = ExtResource( 4 )
+script = null
+
+[node name="Node2D" type="Node2D" parent="Level"]
+position = Vector2(2500, -100)
+script = null
+
+[node name="MovingPlatform2" type="CharacterBody2D" parent="Level/Node2D"]
+skew = 4.37114e-08
+motion/sync_to_physics = true
+script = null
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Level/Node2D/MovingPlatform2"]
+shape = SubResource( 6 )
+script = null
+
+[node name="CollisionShape2D2" type="CollisionShape2D" parent="Level/Node2D/MovingPlatform2"]
+position = Vector2(16.5347, -190.147)
+rotation = 1.5708
+shape = SubResource( 7 )
+script = null
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="Level/Node2D/MovingPlatform2"]
+autoplay = "default"
+playback_process_mode = 0
+playback_speed = 1.5
+anims/RESET = SubResource( 8 )
+anims/default = SubResource( 9 )
+blend_times = []
+script = null
+
+[node name="Node2D2" type="Node2D" parent="Level"]
+script = null
+
+[node name="MovingPlatform" type="CharacterBody2D" parent="Level/Node2D2"]
+skew = 4.37114e-08
+motion/sync_to_physics = true
+script = null
+
+[node name="TileMap" type="TileMap" parent="Level/Node2D2/MovingPlatform"]
+tile_set = SubResource( 4 )
+show_collision = 1
+format = 2
+tile_data = PackedInt32Array(-65518, 0, 0, -65517, 0, 0, -65516, 0, 0, -589803, 0, 0, -524267, 0, 0, -458731, 0, 0, -393195, 0, 0, -327659, 0, 0, -262123, 0, 0, -196587, 0, 0, -131051, 0, 0, -65515, 0, 0, -65514, 0, 0, -65513, 0, 0, -65512, 0, 0)
+script = null
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Level/Node2D2/MovingPlatform"]
+position = Vector2(1158.97, -212.999)
+shape = SubResource( 5 )
+script = null
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="Level/Node2D2/MovingPlatform"]
+playback_process_mode = 0
+blend_times = []
+script = null
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+script = null
+
+[node name="Control" type="Control" parent="CanvasLayer"]
+offset_right = 40.0
+offset_bottom = 40.0
+script = null
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="ModeItemList" type="ItemList" parent="CanvasLayer/Control"]
+offset_left = 833.766
+offset_top = 5.8576
+offset_right = 1015.77
+offset_bottom = 114.858
+items = ["New behaviour", null, false, "Current GD Script", null, false, "Current C++", null, false]
+script = null
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="StopButton" type="CheckButton" parent="CanvasLayer/Control"]
+offset_left = 839.507
+offset_top = 120.389
+offset_right = 1023.51
+offset_bottom = 160.389
+focus_mode = 0
+pressed = true
+text = "Stop on slope"
+align = 2
+script = null
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="SnapButton" type="CheckButton" parent="CanvasLayer/Control"]
+offset_left = 904.582
+offset_top = 154.781
+offset_right = 1022.58
+offset_bottom = 194.781
+focus_mode = 0
+pressed = true
+text = "Snap"
+align = 2
+script = null
+
+[node name="ConstantButton" type="CheckButton" parent="CanvasLayer/Control"]
+offset_left = 824.717
+offset_top = 193.552
+offset_right = 1024.72
+offset_bottom = 233.552
+focus_mode = 0
+pressed = true
+text = "Constant Speed"
+align = 2
+script = null
+
+[node name="MoveOnFloorButton" type="CheckButton" parent="CanvasLayer/Control"]
+offset_left = 799.575
+offset_top = 232.595
+offset_right = 1024.57
+offset_bottom = 272.595
+focus_mode = 0
+pressed = true
+text = "Move on floor only"
+align = 2
+script = null
+
+[node name="SlideCeilingButton" type="CheckButton" parent="CanvasLayer/Control"]
+offset_left = 799.575
+offset_top = 269.569
+offset_right = 1024.57
+offset_bottom = 309.569
+focus_mode = 0
+pressed = true
+text = "Slide on ceiling"
+align = 2
+script = null
+
+[node name="InfiniteJumpButton" type="CheckButton" parent="CanvasLayer/Control"]
+offset_left = 607.237
+offset_top = 4.30715
+offset_right = 832.237
+offset_bottom = 44.3072
+focus_mode = 0
+pressed = true
+text = "Infinite Jump
+"
+align = 2
+script = null
+
+[node name="AirFrictionButton" type="CheckButton" parent="CanvasLayer/Control"]
+offset_left = 606.221
+offset_top = 42.1109
+offset_right = 831.221
+offset_bottom = 82.1109
+focus_mode = 0
+pressed = true
+text = "Air friction
+"
+align = 2
+script = null
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="SlowdownButton" type="CheckButton" parent="CanvasLayer/Control"]
+offset_left = 589.337
+offset_top = 78.416
+offset_right = 832.337
+offset_bottom = 118.416
+focus_mode = 0
+pressed = true
+text = "Slowdown falling wall"
+align = 2
+script = null
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="HUDLabel" type="Label" parent="CanvasLayer/Control"]
+offset_right = 40.0
+offset_bottom = 23.0
+text = "HUD"
+structured_text_bidi_override_options = []
+script = null
+
+[connection signal="item_selected" from="CanvasLayer/Control/ModeItemList" to="." method="_on_ModeItemList_item_selected"]
+[connection signal="toggled" from="CanvasLayer/Control/StopButton" to="." method="_on_StopButton_toggled"]
+[connection signal="toggled" from="CanvasLayer/Control/SnapButton" to="." method="_on_SnapButton_toggled"]
+[connection signal="toggled" from="CanvasLayer/Control/ConstantButton" to="." method="_on_ConstantButton_toggled"]
+[connection signal="toggled" from="CanvasLayer/Control/MoveOnFloorButton" to="." method="_on_MoveOnFloorButton_toggled"]
+[connection signal="toggled" from="CanvasLayer/Control/SlideCeilingButton" to="." method="_on_SlideCeilingButton_toggled"]
+[connection signal="toggled" from="CanvasLayer/Control/InfiniteJumpButton" to="." method="_on_InfiniteJumpButton_toggled"]
+[connection signal="toggled" from="CanvasLayer/Control/AirFrictionButton" to="." method="_on_AirFrictionButton_toggled"]
+[connection signal="toggled" from="CanvasLayer/Control/SlowdownButton" to="." method="_on_SlowdownButton_toggled"]

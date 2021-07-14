@@ -12,7 +12,7 @@ var slow_mo_idx := 0
 var platform_velocity = ""
 
 func _ready():
-	$Level/Base/CollisionPolygon2D.polygon = $Level/Base/Polygon2D.polygon
+#	$Level/Base/CollisionPolygon2D.polygon = $Level/Base/Polygon2D.polygon
 	$CanvasLayer/Control/ModeItemList.select(0)
 	set_mode(0)
 	

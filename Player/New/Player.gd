@@ -67,7 +67,7 @@ var ceilling_normal := Vector2()
 
 func custom_move_and_slide():
 	var current_floor_velocity = Vector2.ZERO
-	if on_floor:
+	if on_floor or on_wall:
 		var excluded = false
 		for layer in exclude_body_layer:
 			if on_floor_layer & (1 << layer) != 0:

@@ -62,32 +62,107 @@ var floor_velocity := Vector2()
 var FLOOR_ANGLE_THRESHOLD := 0.01
 var was_on_floor = false
 
+class CustomKinematicCollision2D:
+	var position : Vector2
+	var normal : Vector2
+	var collider : Object
+	var collider_velocity : Vector2
+	var travel : Vector2
+	var remainder : Vector2
+	var collision_rid: RID
+	
+	func get_collider_rid():
+		return collision_rid
+	
+func custom_move_and_collide(p_motion: Vector2, p_infinite_inertia: bool = true, p_exclude_raycast_shapes: bool = true , p_test_only: bool = false, p_cancel_sliding: bool = true, exlude = []):
+	var gt := get_global_transform()
+	
+	var margin = get_safe_margin()
+	
+	var result := PhysicsTestMotionResult2D.new()
+	var colliding := PhysicsServer2D.body_test_motion(get_rid(), gt, p_motion, p_infinite_inertia, margin, result, p_exclude_raycast_shapes, exlude)
+	
+	var result_motion := result.motion
+	var result_remainder := result.motion_remainder
+	
+	if p_cancel_sliding:
+
+		var motion_length := p_motion.length()
+		var precision := 0.001
+		
+		if colliding:
+			# Can't just use margin as a threshold because collision depth is calculated on unsafe motion,
+			# so even in normal resting cases the depth can be a bit more than the margin.
+			precision += motion_length * (result.collision_unsafe_fraction - result.collision_safe_fraction)
+
+			if  result.collision_depth > margin + precision:
+				p_cancel_sliding = false
+
+		if p_cancel_sliding:
+			# When motion is null, recovery is the resulting motion.
+			var motion_normal = Vector2.ZERO
+			if motion_length > 0.00001:
+				motion_normal = p_motion / motion_length
+			
+			# Check depth of recovery.
+			var projected_length := result.motion.dot(motion_normal)
+			var recovery := result.motion - motion_normal * projected_length
+			var recovery_length := recovery.length()
+			# Fixes cases where canceling slide causes the motion to go too deep into the ground,
+			# Becauses we're only taking rest information into account and not general recovery.
+			if recovery_length < margin + precision:
+				# Apply adjustment to motion.
+				result_motion = motion_normal * projected_length
+				result_remainder = p_motion - result_motion
+	
+	if (not p_test_only):
+		position += result_motion
+	
+	if colliding:
+		var collision := CustomKinematicCollision2D.new()
+		collision.position = result.collision_point
+		collision.normal = result.collision_normal
+		collision.collider = result.collider
+		collision.collider_velocity = result.collider_velocity
+		collision.travel = result_motion
+		collision.remainder = result_remainder
+		collision.collision_rid = result.collider_rid
+		
+		return collision
+	else:
+		return null
+
 func gd_move_and_slide():
 	var body_velocity_normal := linear_velocity.normalized()
 	
 	was_on_floor = on_floor
 	
 	var current_floor_velocity := floor_velocity
-	if on_floor and on_floor_body.get_id():
+	if (on_floor or on_wall) and on_floor_body.get_id():
 		var bs := PhysicsServer2D.body_get_direct_state(on_floor_body)
 		if bs:
 			current_floor_velocity = bs.linear_velocity
  
-	var motion: Vector2 = (current_floor_velocity + linear_velocity) * get_physics_process_delta_time()
- 
 	on_floor = false
-	on_floor_body = RID()
 	on_ceiling = false
 	on_wall = false
 	floor_normal = Vector2()
 	floor_velocity = Vector2()
+	
+	if current_floor_velocity != Vector2.ZERO: # apply platform movement first
+		var platform_collision = custom_move_and_collide(current_floor_velocity * get_physics_process_delta_time(), infinite_inertia, false, false, false, [on_floor_body])
+		if platform_collision:
+			_set_collision_direction(platform_collision)
+
+	on_floor_body = RID()
+	var motion: Vector2 = linear_velocity * get_physics_process_delta_time()
  
 	# No sliding on first attempt to keep motion stable when possible.
-	var sliding_enabled := false
+	var sliding_enabled := not stop_on_slope
 	for i in range(max_slides):
 		
 		var found_collision := false
-		var collision = move_and_collide(motion, infinite_inertia, true, false, not sliding_enabled)
+		var collision = custom_move_and_collide(motion, infinite_inertia, true, false, not sliding_enabled)
 		if not collision:
 			motion = Vector2() #clear because no collision happened and motion completed
  
@@ -95,29 +170,16 @@ func gd_move_and_slide():
 			last_normal = collision.normal # debug
 			found_collision = true
 
-			if up_direction == Vector2():
-				# all is a wall
-				on_wall = true;
-			else :
-				if (acos(collision.normal.dot(up_direction)) <= floor_max_angle + FLOOR_ANGLE_THRESHOLD): # floor
- 
-					on_floor = true
-					floor_normal = collision.normal
-					var collision_object := collision.collider as CollisionObject2D
-					on_floor_body = collision_object.get_rid()
-					floor_velocity = collision.collider_velocity
-				
-					if stop_on_slope:
-						if (body_velocity_normal + up_direction).length() < 0.01:
-							#if collision.travel.length() > get_safe_margin():
-							#	position -= collision.travel.slide(up_direction)
-							#else:
-							position -= collision.travel
+			_set_collision_direction(collision)
 
-				elif (acos(collision.normal.dot(-up_direction)) <= floor_max_angle + FLOOR_ANGLE_THRESHOLD) : #ceiling
-					on_ceiling = true;
-				else:
-					on_wall = true;
+			if on_floor and stop_on_slope and collision.remainder.slide(up_direction).length() <= 0.01:
+				if (body_velocity_normal.normalized() + up_direction).length() < 0.01 :
+					if collision.travel.length() > get_safe_margin():
+						position -= collision.travel.slide(up_direction)
+					else:
+						position -= collision.travel
+					return Vector2()
+
 			if sliding_enabled or not on_floor:
 				motion = collision.remainder.slide(collision.normal)
 				linear_velocity = linear_velocity.slide(collision.normal)
@@ -127,9 +189,29 @@ func gd_move_and_slide():
 		if  not found_collision or motion == Vector2():
 			break
 
-	custom_snap()
+	#custom_snap()
 	return linear_velocity
 
+
+func _set_collision_direction(collision):
+	on_floor = false
+	on_ceiling = false
+	on_wall = false
+	if acos(collision.normal.dot(up_direction)) <= floor_max_angle + FLOOR_ANGLE_THRESHOLD:
+		on_floor = true
+		floor_normal = collision.normal
+		floor_velocity = collision.collider_velocity
+		on_floor_layer = collision.collider.get_collision_layer()
+		on_floor_body = collision.get_collider_rid()
+
+	elif acos(collision.normal.dot(-up_direction)) <= floor_max_angle + FLOOR_ANGLE_THRESHOLD:
+		on_ceiling = true
+	else:
+		floor_velocity = collision.collider_velocity
+		on_floor_layer = collision.collider.get_collision_layer()
+		on_floor_body = collision.get_collider_rid()
+		on_wall = true
+		
 func custom_snap():
 	if snap == Vector2.ZERO or on_floor or not was_on_floor: return
 	var collision = move_and_collide(snap, infinite_inertia, false, true)

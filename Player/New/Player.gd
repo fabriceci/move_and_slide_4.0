@@ -65,6 +65,76 @@ var was_on_floor = false
 var wall_normal := Vector2()
 var ceilling_normal := Vector2()
 
+class CustomKinematicCollision2D:
+	var position : Vector2
+	var normal : Vector2
+	var collider : Object
+	var collider_velocity : Vector2
+	var travel : Vector2
+	var remainder : Vector2
+	var collision_rid: RID
+	
+	func get_collider_rid():
+		return collision_rid
+	
+func custom_move_and_collide(p_motion: Vector2, p_infinite_inertia: bool = true, p_exclude_raycast_shapes: bool = true , p_test_only: bool = false, p_cancel_sliding: bool = true, exlude = []):
+	var gt := get_global_transform()
+	
+	var margin = get_safe_margin()
+	
+	var result := PhysicsTestMotionResult2D.new()
+	var colliding := PhysicsServer2D.body_test_motion(get_rid(), gt, p_motion, p_infinite_inertia, margin, result, p_exclude_raycast_shapes, exlude)
+	
+	var result_motion := result.motion
+	var result_remainder := result.motion_remainder
+	
+	if p_cancel_sliding:
+
+		var motion_length := p_motion.length()
+		var precision := 0.001
+		
+		if colliding:
+			# Can't just use margin as a threshold because collision depth is calculated on unsafe motion,
+			# so even in normal resting cases the depth can be a bit more than the margin.
+			precision += motion_length * (result.collision_unsafe_fraction - result.collision_safe_fraction)
+
+			if  result.collision_depth > margin + precision:
+				p_cancel_sliding = false
+
+		if p_cancel_sliding:
+			# When motion is null, recovery is the resulting motion.
+			var motion_normal = Vector2.ZERO
+			if motion_length > 0.00001:
+				motion_normal = p_motion / motion_length
+			
+			# Check depth of recovery.
+			var projected_length := result.motion.dot(motion_normal)
+			var recovery := result.motion - motion_normal * projected_length
+			var recovery_length := recovery.length()
+			# Fixes cases where canceling slide causes the motion to go too deep into the ground,
+			# Becauses we're only taking rest information into account and not general recovery.
+			if recovery_length < margin + precision:
+				# Apply adjustment to motion.
+				result_motion = motion_normal * projected_length
+				result_remainder = p_motion - result_motion
+	
+	if (not p_test_only):
+		position += result_motion
+	
+	if colliding:
+		var collision := CustomKinematicCollision2D.new()
+		collision.position = result.collision_point
+		collision.normal = result.collision_normal
+		collision.collider = result.collider
+		collision.collider_velocity = result.collider_velocity
+		collision.travel = result_motion
+		collision.remainder = result_remainder
+		collision.collision_rid = result.collider_rid
+		
+		return collision
+	else:
+		return null
+
 func custom_move_and_slide():
 	var current_floor_velocity = Vector2.ZERO
 	if on_floor or on_wall:
@@ -75,7 +145,6 @@ func custom_move_and_slide():
 		if not excluded:
 			current_floor_velocity = floor_velocity
 			if on_floor_body:
-
 				var bs := PhysicsServer2D.body_get_direct_state(on_floor_body)
 				if bs:
 					current_floor_velocity = bs.linear_velocity
@@ -113,44 +182,21 @@ func custom_move_and_slide():
 	for _i in range(max_slides):
 		var continue_loop = false
 		var previous_pos = position
-		var collision = move_and_collide(motion, infinite_inertia, true, false)
+		var collision = custom_move_and_collide(motion, infinite_inertia, true, false, not sliding_enabled)
 
 		if collision:
 			last_normal = collision.normal # for debug
 
-			if up_direction == Vector2():
-				on_wall = true;
-			else :
-				if acos(collision.normal.dot(up_direction)) <= floor_max_angle + FLOOR_ANGLE_THRESHOLD:
-					on_floor = true
-					floor_normal = collision.normal
-					floor_velocity = collision.collider_velocity
-					if collision.collider.has_method("get_collision_layer"): # need a way to retrieve collision layer for tilemap
-						on_floor_layer = collision.collider.get_collision_layer()
-					on_floor_body = collision.get_collider_rid()
-					
-					if stop_on_slope and collision.remainder.slide(up_direction).length() <= 0.01:
-						if (original_motion.normalized() + up_direction).length() < 0.01 :
-							if collision.travel.length() > get_safe_margin():
-								position -= collision.travel.slide(up_direction)
-							else:
-								position -= collision.travel
-							return Vector2()
-
-				elif acos(collision.normal.dot(-up_direction)) <= floor_max_angle + FLOOR_ANGLE_THRESHOLD:
-					ceilling_normal = collision.normal
-					on_ceiling = true
-				else:
-					floor_velocity = collision.collider_velocity
-					if collision.collider.has_method("get_collision_layer"): # need a way to retrieve collision layer for tilemap
-						on_floor_layer = collision.collider.get_collision_layer()
-					on_floor_body = collision.get_collider_rid()
-					wall_normal = collision.normal
-					on_wall = true
-			
-			if not on_floor:
-				sliding_enabled = true
-			
+			_set_collision_direction(collision)
+	
+			if on_floor and stop_on_slope and collision.remainder.slide(up_direction).length() <= 0.01:
+				if (original_motion.normalized() + up_direction).length() < 0.01 :
+					if collision.travel.length() > get_safe_margin():
+						position -= collision.travel.slide(up_direction)
+					else:
+						position -= collision.travel
+					return Vector2()
+							
 			# compute motion
 			# constant speed
 			if on_floor and constant_speed_on_floor and can_apply_constant_speed:
@@ -223,6 +269,28 @@ func custom_move_and_slide():
 	if not on_floor and not on_wall:
 		linear_velocity += current_floor_velocity # Add last floor velocity when just left a moving platform
 
+
+func _set_collision_direction(collision):
+	on_floor = false
+	on_ceiling = false
+	on_wall = false
+	if acos(collision.normal.dot(up_direction)) <= floor_max_angle + FLOOR_ANGLE_THRESHOLD:
+		on_floor = true
+		floor_normal = collision.normal
+		floor_velocity = collision.collider_velocity
+		on_floor_layer = collision.collider.get_collision_layer()
+		on_floor_body = collision.get_collider_rid()
+
+	elif acos(collision.normal.dot(-up_direction)) <= floor_max_angle + FLOOR_ANGLE_THRESHOLD:
+		ceilling_normal = collision.normal
+		on_ceiling = true
+	else:
+		floor_velocity = collision.collider_velocity
+		on_floor_layer = collision.collider.get_collision_layer()
+		on_floor_body = collision.get_collider_rid()
+		wall_normal = collision.normal
+		on_wall = true
+
 func custom_snap():
 	if snap == Vector2.ZERO or on_floor or not was_on_floor: return
 	var collision = move_and_collide(snap, infinite_inertia, false, true)
@@ -246,6 +314,27 @@ func custom_snap():
 				apply = false
 		if apply:	
 			position += travelled
+
+func _process_collision(collision, p_up_direction, p_floor_max_angle):
+	on_floor = false
+	on_ceiling = false
+	on_wall = false
+	if acos(collision.normal.dot(p_up_direction)) <= p_floor_max_angle + FLOOR_ANGLE_THRESHOLD:
+		on_floor = true
+		floor_normal = collision.normal
+		floor_velocity = collision.collider_velocity
+		on_floor_layer = collision.collider.get_collision_layer()
+		on_floor_body = collision.get_collider_rid()
+
+	elif acos(collision.normal.dot(-p_up_direction)) <= p_floor_max_angle + FLOOR_ANGLE_THRESHOLD:
+		ceilling_normal = collision.normal
+		on_ceiling = true
+	else:
+		floor_velocity = collision.collider_velocity
+		on_floor_layer = collision.collider.get_collision_layer()
+		on_floor_body = collision.get_collider_rid()
+		wall_normal = collision.normal
+		on_wall = true
 
 func _draw():
 	var icon_pos : Vector2 = $icon.position

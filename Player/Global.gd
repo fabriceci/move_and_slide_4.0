@@ -10,7 +10,7 @@ var GROUND_FRICTION := 1000
 var AIR_FRICTION := 1000
 var JUMP_FORCE := -1000
 var INFINITE_JUMP := true
-var SLOWDOWN_FALLING_WALL := true
+var SLOWDOWN_FALLING_WALL := false
 
 # move and slide
 var APPLY_SNAP := true

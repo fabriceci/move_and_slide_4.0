@@ -11,6 +11,8 @@ var constant_speed_on_floor: bool = false
 var slide_on_ceiling: bool = true
 var exclude_body_layer := []
 
+var auto := false
+
 func _process(delta):
 	snap = Global.SNAP_FORCE
 	constant_speed_on_floor = Global.CONSTANT_SPEED_ON_FLOOR
@@ -41,6 +43,11 @@ func _physics_process(delta):
 		linear_velocity.x = move_toward(linear_velocity.x, 0, Global.GROUND_FRICTION)
 	else:
 		linear_velocity.x = move_toward(linear_velocity.x, 0, Global.AIR_FRICTION)
+	
+	if Input.is_action_just_pressed("ui_down"):
+		auto = not auto
+	if auto:
+		linear_velocity.x = -speed
 	
 	if Global.SLOWDOWN_FALLING_WALL and on_wall and linear_velocity.y > 0:
 		var vel_x = linear_velocity.slide(Global.UP_DIRECTION).normalized()
@@ -218,7 +225,7 @@ func custom_move_and_slide():
 				else:
 					motion = collision.remainder
 			# constant speed on floor
-			elif on_floor and was_on_floor and constant_speed_on_floor and can_apply_constant_speed and motion.dot(collision.normal) > 0:
+			elif on_floor and was_on_floor and constant_speed_on_floor and can_apply_constant_speed and motion.dot(collision.normal) < 0:
 				var slide: Vector2 = collision.remainder.slide(collision.normal).normalized()
 				if not slide.is_equal_approx(Vector2.ZERO):
 					motion = slide * (motion_slided_up.length() - collision.travel.slide(up_direction).length() - prev_travel.slide(up_direction).length())

@@ -192,7 +192,7 @@ func custom_move_and_slide():
 			_set_collision_direction(collision)
 	
 			if on_floor and stop_on_slope and collision.remainder.slide(up_direction).length() <= 0.01:
-				if (motion_slided_up.normalized() + up_direction).length() < 0.01 :
+				if (motion.normalized() + up_direction).length() < 0.01 :
 					if collision.travel.length() > get_safe_margin():
 						position = position - collision.travel.slide(up_direction)
 					else:
@@ -293,7 +293,7 @@ func _set_collision_direction(collision):
 		on_wall = true
 
 func floor_snap():
-	if up_direction == Vector2.ZERO or on_floor or not was_on_floor: return
+	if up_direction == Vector2.ZERO or snap == Vector2.ZERO or on_floor or not was_on_floor: return
 	
 	var collision := custom_move_and_collide(snap, infinite_inertia, false, true)
 	if collision:

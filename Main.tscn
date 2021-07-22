@@ -1,6 +1,5 @@
-[gd_scene load_steps=16 format=2]
+[gd_scene load_steps=15 format=2]
 
-[ext_resource path="res://Player/Current/Player.tscn" type="PackedScene" id=1]
 [ext_resource path="res://Main.gd" type="Script" id=2]
 [ext_resource path="res://grid.png" type="Texture2D" id=3]
 [ext_resource path="res://icon.png" type="Texture2D" id=4]
@@ -113,9 +112,6 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="Player" parent="." instance=ExtResource( 1 )]
-stop_on_slope = true
-
 [node name="Level" type="Node2D" parent="."]
 script = null
 __meta__ = {
@@ -160,19 +156,21 @@ script = null
 position = Vector2(2500, -100)
 script = null
 
-[node name="MovingPlatform2" type="CharacterBody2D" parent="Level/Node2D"]
+[node name="MovingPlatform2" type="StaticBody2D" parent="Level/Node2D"]
 skew = 4.37114e-08
-linear_velocity = Vector2(0, -300)
-motion/sync_to_physics = true
+kinematic_motion = true
+sync_to_physics = true
 script = null
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Level/Node2D/MovingPlatform2"]
+skew = 4.37114e-08
 shape = SubResource( 6 )
 script = null
 
 [node name="CollisionShape2D2" type="CollisionShape2D" parent="Level/Node2D/MovingPlatform2"]
 position = Vector2(16.5347, -190.147)
 rotation = 1.5708
+skew = 4.37114e-08
 shape = SubResource( 7 )
 script = null
 
@@ -188,12 +186,14 @@ script = null
 [node name="Node2D2" type="Node2D" parent="Level"]
 script = null
 
-[node name="MovingPlatform" type="CharacterBody2D" parent="Level/Node2D2"]
+[node name="MovingPlatform" type="StaticBody2D" parent="Level/Node2D2"]
 skew = 4.37114e-08
-motion/sync_to_physics = true
+kinematic_motion = true
+sync_to_physics = true
 script = null
 
 [node name="TileMap" type="TileMap" parent="Level/Node2D2/MovingPlatform"]
+skew = 4.37114e-08
 tile_set = SubResource( 4 )
 show_collision = 1
 format = 2
@@ -202,6 +202,7 @@ script = null
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Level/Node2D2/MovingPlatform"]
 position = Vector2(1158.97, -212.999)
+skew = 4.37114e-08
 shape = SubResource( 5 )
 script = null
 
@@ -229,6 +230,7 @@ offset_left = 833.766
 offset_top = 5.8576
 offset_right = 1015.77
 offset_bottom = 114.858
+focus_mode = 0
 items = ["New behaviour", null, false, "Current GD Script", null, false, "Current C++", null, false]
 script = null
 __meta__ = {

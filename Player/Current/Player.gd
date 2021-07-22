@@ -22,13 +22,13 @@ func _process(_delta):
 	update()
 
 func _physics_process(delta):
-	linear_velocity += Global.GRAVITY_FORCE * delta
+	linear_velocity = linear_velocity + Global.GRAVITY_FORCE * delta
 	if Global.APPLY_SNAP:
 		snap = Global.SNAP_FORCE
 	else:
 		snap = Vector2.ZERO
 	if Input.is_action_just_pressed('ui_accept') and (Global.INFINITE_JUMP or util_on_floor()):
-		linear_velocity.y += Global.JUMP_FORCE
+		linear_velocity.y = linear_velocity.y + Global.JUMP_FORCE
 		snap = Vector2.ZERO
 	
 	var speed = Global.RUN_SPEED if Input.is_action_pressed('run') and util_on_floor() else Global.NORMAL_SPEED
@@ -93,9 +93,9 @@ func custom_move_and_collide(p_motion: Vector2, p_infinite_inertia: bool = true,
 		if colliding:
 			# Can't just use margin as a threshold because collision depth is calculated on unsafe motion,
 			# so even in normal resting cases the depth can be a bit more than the margin.
-			precision += motion_length * (result.collision_unsafe_fraction - result.collision_safe_fraction)
+			precision = precision + motion_length * (result.collision_unsafe_fraction - result.collision_safe_fraction)
 
-			if  result.collision_depth > margin + precision:
+			if result.collision_depth > margin + precision:
 				p_cancel_sliding = false
 
 		if p_cancel_sliding:
@@ -116,7 +116,7 @@ func custom_move_and_collide(p_motion: Vector2, p_infinite_inertia: bool = true,
 				result_remainder = p_motion - result_motion
 	
 	if (not p_test_only):
-		position += result_motion
+		position = position + result_motion
 	
 	if colliding:
 		var collision := CustomKinematicCollision2D.new()
@@ -201,14 +201,14 @@ func _set_collision_direction(collision):
 		on_floor = true
 		floor_normal = collision.normal
 		floor_velocity = collision.collider_velocity
-		on_floor_layer = collision.collider.get_collision_layer()
+		#on_floor_layer = collision.collider.get_collision_layer()
 		on_floor_body = collision.get_collider_rid()
 
 	elif acos(collision.normal.dot(-up_direction)) <= floor_max_angle + FLOOR_ANGLE_THRESHOLD:
 		on_ceiling = true
 	else:
 		floor_velocity = collision.collider_velocity
-		on_floor_layer = collision.collider.get_collision_layer()
+		#on_floor_layer = collision.collider.get_collision_layer()
 		on_floor_body = collision.get_collider_rid()
 		on_wall = true
 		
@@ -235,7 +235,7 @@ func custom_snap():
 				apply = false
 		if apply:
 			print(apply)
-			global_position += travelled
+			global_position = global_position + travelled
 
 func _draw():
 	var icon_pos = $icon.position

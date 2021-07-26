@@ -1,18 +1,18 @@
-[gd_scene load_steps=4 format=2]
+[gd_scene load_steps=4 format=3 uid="uid://svwmld22gmxp"]
 
-[ext_resource path="res://icon.png" type="Texture2D" id=1]
-[ext_resource path="res://Player/New/Player.gd" type="Script" id=2]
+[ext_resource type="Texture2D" uid="uid://c3pijaeyyp4xr" path="res://icon.png" id="1"]
+[ext_resource type="Script" path="res://Player/New/Player.gd" id="2"]
 
-[sub_resource type="CircleShape2D" id=1]
+[sub_resource type="CircleShape2D" id="1"]
 radius = 30.1178
 
 [node name="Player" type="CharacterBody2D"]
 floor_snap_strength = 2.97373e-32
-script = ExtResource( 2 )
+script = ExtResource( "2" )
 
 [node name="icon" type="Sprite2D" parent="."]
 skew = 4.37114e-08
-texture = ExtResource( 1 )
+texture = ExtResource( "1" )
 script = null
 
 [node name="RayCast2D" type="RayCast2D" parent="."]
@@ -22,7 +22,7 @@ script = null
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 skew = 4.37114e-08
-shape = SubResource( 1 )
+shape = SubResource( "1" )
 script = null
 
 [node name="Camera2D" type="Camera2D" parent="."]

@@ -5,9 +5,6 @@ signal follow_platform(message)
 var last_normal = Vector2.ZERO
 var use_build_in = false
 
-# Move and slide
-var exclude_body_layer := []
-
 func _ready():
 	$Camera2D.current = true
 

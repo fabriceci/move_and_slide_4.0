@@ -5,9 +5,6 @@ signal follow_platform(message)
 var last_normal = Vector2.ZERO
 var last_motion = Vector2.ZERO
 
-# Move and slide
-var exclude_body_layer := []
-
 var auto := false
 
 func _ready():

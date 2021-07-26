@@ -77,7 +77,7 @@ func set_mode(index: int):
 	if current_index != index:
 		current_index = index
 		var _instance: CharacterBody2D
-		if index == 0:
+		if index == 0 or index == 2:
 			_instance = PlayerCustom.instantiate()
 			ui_options(true)
 		else:

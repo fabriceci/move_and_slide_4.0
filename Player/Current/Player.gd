@@ -6,13 +6,13 @@ var last_normal = Vector2.ZERO
 var use_build_in = false
 
 # Move and slide
-var move_on_floor_only: bool = false
-var constant_speed_on_floor: bool = false
-var slide_on_ceiling: bool = true
 var exclude_body_layer := []
 
+func _ready():
+	$Camera2D.current = true
+
 func _process(_delta):
-	snap = Global.SNAP_FORCE
+	floor_snap_strength = Global.SNAP_FORCE
 	constant_speed_on_floor = Global.CONSTANT_SPEED_ON_FLOOR
 	slide_on_ceiling = Global.SLIDE_ON_CEILING
 	move_on_floor_only = Global.MOVE_ON_FLOOR_ONLY
@@ -24,12 +24,12 @@ func _process(_delta):
 func _physics_process(delta):
 	linear_velocity = linear_velocity + Global.GRAVITY_FORCE * delta
 	if Global.APPLY_SNAP:
-		snap = Global.SNAP_FORCE
+		floor_snap_strength = Global.SNAP_FORCE
 	else:
-		snap = Vector2.ZERO
+		floor_snap_strength = 0
 	if Input.is_action_just_pressed('ui_accept') and (Global.INFINITE_JUMP or util_on_floor()):
 		linear_velocity.y = linear_velocity.y + Global.JUMP_FORCE
-		snap = Vector2.ZERO
+		floor_snap_strength = 0
 	
 	var speed = Global.RUN_SPEED if Input.is_action_pressed('run') and util_on_floor() else Global.NORMAL_SPEED
 	var direction = _get_direction()
@@ -213,8 +213,8 @@ func _set_collision_direction(collision):
 		on_wall = true
 		
 func custom_snap():
-	if snap == Vector2.ZERO or on_floor or not was_on_floor: return
-	var collision = move_and_collide(snap, infinite_inertia, false, true)
+	if is_equal_approx(floor_snap_strength, 0) or on_floor or not was_on_floor: return
+	var collision = move_and_collide(up_direction * -floor_snap_strength, infinite_inertia, false, true)
 	
 	if collision:
 		var apply := true
@@ -234,7 +234,6 @@ func custom_snap():
 			else:
 				apply = false
 		if apply:
-			print(apply)
 			global_position = global_position + travelled
 
 func _draw():

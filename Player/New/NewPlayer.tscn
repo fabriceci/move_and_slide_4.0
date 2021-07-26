@@ -4,9 +4,10 @@
 [ext_resource path="res://Player/New/Player.gd" type="Script" id=2]
 
 [sub_resource type="CircleShape2D" id=1]
-radius = 30.4492
+radius = 30.1178
 
 [node name="Player" type="CharacterBody2D"]
+floor_snap_strength = 2.97373e-32
 script = ExtResource( 2 )
 
 [node name="icon" type="Sprite2D" parent="."]
@@ -25,6 +26,5 @@ shape = SubResource( 1 )
 script = null
 
 [node name="Camera2D" type="Camera2D" parent="."]
-current = true
 zoom = Vector2(1.5, 1.5)
 script = null

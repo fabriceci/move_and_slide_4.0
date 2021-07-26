@@ -1,22 +1,22 @@
-[gd_scene load_steps=15 format=2]
+[gd_scene load_steps=15 format=3 uid="uid://cm0rtrl1isnu"]
 
-[ext_resource path="res://Main.gd" type="Script" id=2]
-[ext_resource path="res://grid.png" type="Texture2D" id=3]
-[ext_resource path="res://icon.png" type="Texture2D" id=4]
+[ext_resource type="Script" path="res://Main.gd" id="2"]
+[ext_resource type="Texture2D" uid="uid://gs60kyx7uk5u" path="res://grid.png" id="3"]
+[ext_resource type="Texture2D" uid="uid://c3pijaeyyp4xr" path="res://icon.png" id="4"]
 
-[sub_resource type="RectangleShape2D" id=1]
+[sub_resource type="RectangleShape2D" id="1"]
 size = Vector2(661.476, 65.4084)
 
-[sub_resource type="RectangleShape2D" id=2]
+[sub_resource type="RectangleShape2D" id="2"]
 size = Vector2(145, 145)
 
-[sub_resource type="RectangleShape2D" id=6]
+[sub_resource type="RectangleShape2D" id="6"]
 size = Vector2(500, 50)
 
-[sub_resource type="RectangleShape2D" id=7]
+[sub_resource type="RectangleShape2D" id="7"]
 size = Vector2(437.88, 62.7197)
 
-[sub_resource type="Animation" id=8]
+[sub_resource type="Animation" id="8"]
 length = 4.0
 tracks/0/type = "value"
 tracks/0/path = NodePath(".:position")
@@ -31,7 +31,7 @@ tracks/0/keys = {
 "values": [Vector2(0, 0), Vector2(0, -300), Vector2(0, 0)]
 }
 
-[sub_resource type="Animation" id=9]
+[sub_resource type="Animation" id="9"]
 resource_name = "default"
 length = 2.0
 loop = true
@@ -48,21 +48,24 @@ tracks/0/keys = {
 "values": [Vector2(0, 0), Vector2(0, -300), Vector2(0, 0)]
 }
 
-[sub_resource type="TileSetAtlasSource" id=3]
-texture = ExtResource( 4 )
+[sub_resource type="TileSetAtlasSource" id="3"]
+texture = ExtResource( "4" )
 tile_size = Vector2i(64, 64)
 0:0/0 = 0
 0:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(-32, -32, 32, -32, 32, 32, -32, 32)
 
-[sub_resource type="TileSet" id=4]
+[sub_resource type="TileSet" id="4"]
 tile_size = Vector2i(64, 64)
 physics_layer_0/collision_layer = 1
-sources/0 = SubResource( 3 )
+sources/0 = SubResource( "3" )
+tile_proxies/source_level = []
+tile_proxies/coords_level = []
+tile_proxies/alternative_level = []
 
-[sub_resource type="CircleShape2D" id=5]
+[sub_resource type="CircleShape2D" id="5"]
 radius = 70.0
 
-[sub_resource type="Animation" id=11]
+[sub_resource type="Animation" id="11"]
 length = 0.001
 tracks/0/type = "value"
 tracks/0/path = NodePath(".:position")
@@ -77,7 +80,7 @@ tracks/0/keys = {
 "values": [Vector2(0, 0)]
 }
 
-[sub_resource type="Animation" id=10]
+[sub_resource type="Animation" id="10"]
 resource_name = "default"
 length = 2.0
 loop = true
@@ -95,7 +98,7 @@ tracks/0/keys = {
 }
 
 [node name="Main" type="Node2D"]
-script = ExtResource( 2 )
+script = ExtResource( "2" )
 
 [node name="TextureRect" type="TextureRect" parent="."]
 modulate = Color(0.282353, 0.282353, 0.282353, 1)
@@ -104,7 +107,7 @@ offset_left = -2500.0
 offset_top = -2500.0
 offset_right = 3500.0
 offset_bottom = 1500.0
-texture = ExtResource( 3 )
+texture = ExtResource( "3" )
 expand = true
 stretch_mode = 2
 script = null
@@ -129,27 +132,27 @@ script = null
 script = null
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Level/StaticPlatform"]
-shape = SubResource( 1 )
+shape = SubResource( "1" )
 script = null
 
 [node name="icon" type="Sprite2D" parent="Level/StaticPlatform/CollisionShape2D"]
 visible = false
 modulate = Color(0, 0, 0, 1)
 scale = Vector2(10.3067, 1)
-texture = ExtResource( 4 )
+texture = ExtResource( "4" )
 script = null
 
 [node name="CollisionShape2D2" type="CollisionShape2D" parent="Level/StaticPlatform"]
 position = Vector2(300, 0)
 rotation = 0.785398
-shape = SubResource( 2 )
+shape = SubResource( "2" )
 script = null
 
 [node name="icon" type="Sprite2D" parent="Level/StaticPlatform/CollisionShape2D2"]
 visible = false
 modulate = Color(0, 0, 0, 1)
 scale = Vector2(2.25052, 2.40684)
-texture = ExtResource( 4 )
+texture = ExtResource( "4" )
 script = null
 
 [node name="Node2D" type="Node2D" parent="Level"]
@@ -164,22 +167,22 @@ script = null
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Level/Node2D/MovingPlatform2"]
 skew = 4.37114e-08
-shape = SubResource( 6 )
+shape = SubResource( "6" )
 script = null
 
 [node name="CollisionShape2D2" type="CollisionShape2D" parent="Level/Node2D/MovingPlatform2"]
 position = Vector2(16.5347, -190.147)
 rotation = 1.5708
 skew = 4.37114e-08
-shape = SubResource( 7 )
+shape = SubResource( "7" )
 script = null
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="Level/Node2D/MovingPlatform2"]
 autoplay = "default"
 playback_process_mode = 0
 playback_speed = 1.5
-anims/RESET = SubResource( 8 )
-anims/default = SubResource( 9 )
+anims/RESET = SubResource( "8" )
+anims/default = SubResource( "9" )
 blend_times = []
 script = null
 
@@ -195,7 +198,7 @@ script = null
 
 [node name="TileMap" type="TileMap" parent="Level/Node2D2/MovingPlatform"]
 skew = 4.37114e-08
-tile_set = SubResource( 4 )
+tile_set = SubResource( "4" )
 show_collision = 1
 format = 2
 tile_data = PackedInt32Array(-65518, 0, 0, -65517, 0, 0, -65516, 0, 0, -589803, 0, 0, -524267, 0, 0, -458731, 0, 0, -393195, 0, 0, -327659, 0, 0, -262123, 0, 0, -196587, 0, 0, -131051, 0, 0, -65515, 0, 0, -65514, 0, 0, -65513, 0, 0, -65512, 0, 0)
@@ -204,14 +207,14 @@ script = null
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Level/Node2D2/MovingPlatform"]
 position = Vector2(1158.97, -212.999)
 skew = 4.37114e-08
-shape = SubResource( 5 )
+shape = SubResource( "5" )
 script = null
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="Level/Node2D2/MovingPlatform"]
 autoplay = "default"
 playback_process_mode = 0
-anims/RESET = SubResource( 11 )
-anims/default = SubResource( 10 )
+anims/RESET = SubResource( "11" )
+anims/default = SubResource( "10" )
 blend_times = []
 script = null
 

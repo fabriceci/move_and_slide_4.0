@@ -14,7 +14,7 @@ var SLOWDOWN_FALLING_WALL := false
 
 # move and slide
 var APPLY_SNAP := true
-var SNAP_FORCE := Vector2.UP * -50
+var SNAP_FORCE := 50
 var CONSTANT_SPEED_ON_FLOOR := true
 var MOVE_ON_FLOOR_ONLY := true
 var STOP_ON_SLOPE := true

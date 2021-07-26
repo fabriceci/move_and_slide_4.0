@@ -2,8 +2,9 @@ extends CharacterBody2D
 signal follow_platform(message)
 
 @onready var raycast := $RayCast2D
-var last_normal = Vector2.ZERO
-var use_build_in = false
+var last_normal := Vector2.ZERO
+var use_build_in := false
+var auto := false
 
 func _ready():
 	$Camera2D.current = true
@@ -37,6 +38,11 @@ func _physics_process(delta):
 	else:
 		linear_velocity.x = move_toward(linear_velocity.x, 0, Global.AIR_FRICTION)
 	
+	if Input.is_action_just_pressed("ui_down"):
+		auto = not auto
+	if auto:
+		linear_velocity.x = -speed
+		
 	if Global.SLOWDOWN_FALLING_WALL and util_on_wall() and linear_velocity.y > 0:
 		linear_velocity.y = 70
 

@@ -267,7 +267,8 @@ func custom_move_and_slide():
 	if not on_floor and not on_wall:
 		linear_velocity = linear_velocity + current_floor_velocity # Add last floor velocity when just left a moving platform
 	
-	floor_snap()
+	if was_on_floor and not on_floor:
+		floor_snap()
 
 
 func _set_collision_direction(collision):

@@ -36,9 +36,7 @@ func _physics_process(delta):
 	if Engine.time_scale != 1.0:
 		$CanvasLayer/Control/HUDLabel.text += "\nTime scale : %.3f" % Engine.time_scale
 	if current_index == 0:
-		if $Player.on_wall:
-			$CanvasLayer/Control/HUDLabel.text += "\nWall normal: " + str($Player.wall_normal)
-		elif $Player.on_floor:
+		if $Player.on_floor:
 			$CanvasLayer/Control/HUDLabel.text += "\nFloor normal: " + str($Player.floor_normal)
 	$CanvasLayer/Control/HUDLabel.text += "\nPlatform: " + platform_velocity
 	

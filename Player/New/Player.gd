@@ -215,7 +215,7 @@ func custom_move_and_slide():
 				else:
 					motion = collision.remainder
 			# constant Speed when the slope is up
-			elif on_floor and was_on_floor and constant_speed_on_floor and can_apply_constant_speed and motion.dot(collision.normal) < 0:
+			elif util_on_floor_only() and was_on_floor and constant_speed_on_floor and can_apply_constant_speed and motion.dot(collision.normal) < 0:
 				var slide: Vector2 = collision.remainder.slide(collision.normal).normalized()
 				if not slide.is_equal_approx(Vector2.ZERO):
 					motion = slide * (motion_slided_up.length() - collision.travel.slide(up_direction).length() - last_travel.slide(up_direction).length())
@@ -341,6 +341,11 @@ func util_on_floor():
 func util_on_wall():
 	return on_wall
 
+func util_on_floor_only():
+	return on_floor and not on_wall and not on_ceiling
+	
+func util_on_wall_only():
+	return on_wall and not on_floor and not on_ceiling
 func get_state_str():
 	var state = []
 	if on_ceiling: 

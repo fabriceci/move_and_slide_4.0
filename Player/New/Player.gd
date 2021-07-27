@@ -30,7 +30,6 @@ func _physics_process(delta):
 		floor_snap_strength = 0
 	if Input.is_action_just_pressed('ui_accept') and (Global.INFINITE_JUMP or util_on_floor()):
 		linear_velocity.y = linear_velocity.y + Global.JUMP_FORCE
-		floor_snap_strength = 0
 	
 	var speed = Global.RUN_SPEED if Input.is_action_pressed('run') and util_on_floor() else Global.NORMAL_SPEED
 	var direction = _get_direction()
@@ -44,7 +43,7 @@ func _physics_process(delta):
 	if Input.is_action_just_pressed("ui_down"):
 		auto = not auto
 	if auto:
-		linear_velocity.x = -speed
+		linear_velocity.x = -Global.RUN_SPEED
 	
 	if Global.SLOWDOWN_FALLING_WALL and on_wall and linear_velocity.y > 0:
 		var vel_x = linear_velocity.slide(Global.UP_DIRECTION).normalized()
@@ -53,9 +52,6 @@ func _physics_process(delta):
 			linear_velocity.y = 70
 
 	custom_move_and_slide()
-
-	if on_floor:
-		linear_velocity.y = 0	
 
 var on_floor := false
 var on_floor_body:=  RID()
@@ -141,16 +137,15 @@ func custom_move_and_collide(p_motion: Vector2, p_infinite_inertia: bool = true,
 func custom_move_and_slide():
 	var current_floor_velocity = floor_velocity
 	if on_floor or on_wall:
-		var excluded = false
-		for layer in exclude_body_layer:
-			if on_floor_layer & (1 << layer) != 0:
-				excluded = true
+		var excluded = (exclude_body_layers & on_floor_layer) != 0
 		if not excluded:
 			current_floor_velocity = floor_velocity
 			if on_floor_body:
 				var bs := PhysicsServer2D.body_get_direct_state(on_floor_body)
 				if bs:
 					current_floor_velocity = bs.linear_velocity
+		else:
+			current_floor_velocity = Vector2.ZERO
 
 	was_on_floor = on_floor
 	on_floor = false
@@ -200,11 +195,11 @@ func custom_move_and_slide():
 					linear_velocity = Vector2.ZERO
 					return
 							
-			# prevent to move against wall
+			# move on floor only checks
 			if on_wall and move_on_floor_only and motion_slided_up.dot(collision.normal) < 0:
-				if collision.travel.dot(up_direction) > 0 and was_on_floor and linear_velocity.dot(up_direction) <= 0 : # prevent the move against wall
+				# prevent to move against wall
+				if collision.travel.dot(up_direction) > 0 and was_on_floor and not on_floor and linear_velocity.dot(up_direction) <= 0 : # prevent the move against wall
 					position = position - up_direction * up_direction.dot(collision.travel) # remove the x from the vector when up direction is Vector2.UP
-					on_wall = false
 					on_floor = true
 					on_floor_body = prev_floor_body
 					if collision.collider.has_method("get_collision_layer"): # need a way to retrieve collision layer for tilemap
@@ -213,12 +208,13 @@ func custom_move_and_slide():
 					floor_normal = prev_floor_normal
 					linear_velocity = Vector2.ZERO
 					return
-				elif move_on_floor_only and sliding_enabled: # prevent to move against the wall in the air
+				# prevent to move against wall on air
+				elif move_on_floor_only and sliding_enabled and not on_floor and motion.y != 0: # prevent to move against the wall in the air
 					motion = up_direction * up_direction.dot(collision.remainder)
 					motion = motion.slide(collision.normal)
 				else:
 					motion = collision.remainder
-			# constant speed on floor
+			# constant Speed when the slope is up
 			elif on_floor and was_on_floor and constant_speed_on_floor and can_apply_constant_speed and motion.dot(collision.normal) < 0:
 				var slide: Vector2 = collision.remainder.slide(collision.normal).normalized()
 				if not slide.is_equal_approx(Vector2.ZERO):
@@ -263,23 +259,22 @@ func custom_move_and_slide():
 			
 		if not continue_loop and (not collision or motion.is_equal_approx(Vector2())):
 			break
-		
+	
 	if not on_floor and not on_wall:
 		linear_velocity = linear_velocity + current_floor_velocity # Add last floor velocity when just left a moving platform
-	
-	if was_on_floor and not on_floor:
-		floor_snap()
 
+	floor_snap()
+
+	if on_floor and linear_velocity.dot(up_direction) <= 0:
+		linear_velocity = linear_velocity.slide(up_direction)
 
 func _set_collision_direction(collision):
-	on_floor = false
-	on_ceiling = false
-	on_wall = false
 	if acos(collision.normal.dot(up_direction)) <= floor_max_angle + FLOOR_ANGLE_THRESHOLD:
 		on_floor = true
 		floor_normal = collision.normal
 		floor_velocity = collision.collider_velocity
-		on_floor_layer = collision.collider.get_collision_layer()
+		if collision.collider.has_method("get_collision_layer"): # need a way to retrieve collision layer for tilemap
+			on_floor_layer = collision.collider.get_collision_layer()
 		on_floor_body = collision.get_collider_rid()
 
 	elif acos(collision.normal.dot(-up_direction)) <= floor_max_angle + FLOOR_ANGLE_THRESHOLD:
@@ -291,7 +286,7 @@ func _set_collision_direction(collision):
 		on_wall = true
 
 func floor_snap():
-	if up_direction == Vector2.ZERO or is_equal_approx(floor_snap_strength, 0) or on_floor or not was_on_floor: return
+	if up_direction == Vector2.ZERO or is_equal_approx(floor_snap_strength, 0) or on_floor or not was_on_floor or linear_velocity.dot(up_direction) > 0: return
 	
 	var collision := custom_move_and_collide(up_direction * -floor_snap_strength, infinite_inertia, false, true)
 	if collision:
@@ -299,7 +294,8 @@ func floor_snap():
 			on_floor = true
 			floor_normal = collision.normal
 			floor_velocity = collision.collider_velocity
-			on_floor_layer = collision.collider.get_collision_layer()
+			if collision.collider.has_method("get_collision_layer"): # need a way to retrieve collision layer for tilemap
+				on_floor_layer = collision.collider.get_collision_layer()
 			on_floor_body = collision.get_collider_rid()
 			var travelled = collision.travel
 			if stop_on_slope:
@@ -342,13 +338,32 @@ func _draw():
 func util_on_floor():
 	return on_floor
 
-func get_state_str():
-	if on_ceiling: return "ceil"
-	if on_wall: return "wall"
-	if on_floor: return "floor"
-	if on_air: return "air"
-	return "unknow"
+func util_on_wall():
+	return on_wall
 
+func get_state_str():
+	var state = []
+	if on_ceiling: 
+		state.append("ceil")
+	if on_floor: 
+		state.append("floor")
+	if on_wall:
+		state.append("wall")
+	if on_air:
+		state.append("air")
+	
+	if state.size() == 0:
+		state.append("unknow")
+	return array_join(state, " & ")
+
+func array_join(arr : Array, glue : String = '') -> String:
+	var string : String = ''
+	for index in range(0, arr.size()):
+		string += str(arr[index])
+		if index < arr.size() - 1:
+			string += glue
+	return string
+	
 func get_velocity_str():
 	return "Velocity " + str(linear_velocity)
 	

@@ -51,8 +51,8 @@ func _physics_process(delta):
 	else:
 		gd_move_and_slide()
 	
-	if util_on_floor():
-		linear_velocity.y = 0	
+	#if util_on_floor() and linear_velocity.y > 0 :
+	#	linear_velocity.y = 0
 
 var on_floor := false
 var on_floor_body:= RID()
@@ -197,21 +197,20 @@ func gd_move_and_slide():
 
 
 func _set_collision_direction(collision):
-	on_floor = false
-	on_ceiling = false
-	on_wall = false
 	if acos(collision.normal.dot(up_direction)) <= floor_max_angle + FLOOR_ANGLE_THRESHOLD:
 		on_floor = true
 		floor_normal = collision.normal
 		floor_velocity = collision.collider_velocity
-		#on_floor_layer = collision.collider.get_collision_layer()
+		if collision.collider.has_method("get_collision_layer"): # need a way to retrieve collision layer for tilemap
+			on_floor_layer = collision.collider.get_collision_layer()
 		on_floor_body = collision.get_collider_rid()
 
 	elif acos(collision.normal.dot(-up_direction)) <= floor_max_angle + FLOOR_ANGLE_THRESHOLD:
 		on_ceiling = true
 	else:
 		floor_velocity = collision.collider_velocity
-		#on_floor_layer = collision.collider.get_collision_layer()
+		if collision.collider.has_method("get_collision_layer"): # need a way to retrieve collision layer for tilemap
+			on_floor_layer = collision.collider.get_collision_layer()
 		on_floor_body = collision.get_collider_rid()
 		on_wall = true
 		
@@ -252,10 +251,27 @@ func util_on_wall():
 	return is_on_wall() or on_wall
 
 func get_state_str():
-	if on_ceiling or is_on_ceiling(): return "ceil"
-	if on_wall or is_on_wall(): return "wall"
-	if on_floor or is_on_floor(): return "floor"
-	return "air"
+	var state = []
+	if on_ceiling or is_on_ceiling():
+		state.append("ceil")
+	if on_floor or is_on_floor():
+		state.append("floor")
+	if on_wall or is_on_wall():
+		state.append("wall")
+	if on_air or is_on_air():
+		state.append("air")
+	
+	if state.size() == 0:
+		state.append("unknow")
+	return array_join(state, " & ")
+
+func array_join(arr : Array, glue : String = '') -> String:
+	var string : String = ''
+	for index in range(0, arr.size()):
+		string += str(arr[index])
+		if index < arr.size() - 1:
+			string += glue
+	return string
 	
 func get_velocity_str():
 	return "Velocity " + str(linear_velocity)

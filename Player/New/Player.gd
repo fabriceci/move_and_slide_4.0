@@ -196,7 +196,7 @@ func custom_move_and_slide():
 					return
 							
 			# move on floor only checks
-			if on_wall and move_on_floor_only and motion_slided_up.dot(collision.normal) < 0:
+			if move_on_floor_only and on_wall and motion_slided_up.dot(collision.normal) < 0:
 				# prevent to move against wall
 				if collision.travel.dot(up_direction) > 0 and was_on_floor and not on_floor and linear_velocity.dot(up_direction) <= 0 : # prevent the move against wall
 					position = position - up_direction * up_direction.dot(collision.travel) # remove the x from the vector when up direction is Vector2.UP
@@ -209,13 +209,13 @@ func custom_move_and_slide():
 					linear_velocity = Vector2.ZERO
 					return
 				# prevent to move against wall on air
-				elif move_on_floor_only and sliding_enabled and not on_floor and motion.y != 0: # prevent to move against the wall in the air
+				elif sliding_enabled and not on_floor: # prevent to move against the wall in the air
 					motion = up_direction * up_direction.dot(collision.remainder)
 					motion = motion.slide(collision.normal)
 				else:
 					motion = collision.remainder
 			# constant Speed when the slope is up
-			elif util_on_floor_only() and was_on_floor and constant_speed_on_floor and can_apply_constant_speed and motion.dot(collision.normal) < 0:
+			elif constant_speed_on_floor and util_on_floor_only() and was_on_floor and can_apply_constant_speed and motion.dot(collision.normal) < 0:
 				var slide: Vector2 = collision.remainder.slide(collision.normal).normalized()
 				if not slide.is_equal_approx(Vector2.ZERO):
 					motion = slide * (motion_slided_up.length() - collision.travel.slide(up_direction).length() - last_travel.slide(up_direction).length())
@@ -232,21 +232,19 @@ func custom_move_and_slide():
 					linear_velocity = linear_velocity.slide(up_direction)
 					motion = motion.slide(up_direction)
 			last_travel = collision.travel
-		else:
+		elif constant_speed_on_floor:
 			can_apply_constant_speed = first_slide
-			if not is_equal_approx(floor_snap_strength, 0) and was_on_floor:
-				var apply_constant_speed : bool = constant_speed_on_floor and prev_floor_normal != Vector2.ZERO and can_apply_constant_speed
-				if apply_constant_speed:
-					var tmp_position = position
-					position = previous_pos
-					floor_snap()
-					if on_floor and not motion.is_equal_approx(Vector2.ZERO):
-						var slide: Vector2 = motion.slide(prev_floor_normal).normalized()
-						if not slide.is_equal_approx(Vector2.ZERO):
-							motion = slide * (motion_slided_up.length())  # alternative use original_motion.length() to also take account of the y value
-							continue_loop = true
-					else:
-						position = tmp_position
+			if not is_equal_approx(floor_snap_strength, 0) and was_on_floor and prev_floor_normal != Vector2.ZERO and first_slide:
+				var tmp_position = position
+				position = previous_pos
+				floor_snap()
+				if on_floor and not motion.is_equal_approx(Vector2.ZERO):
+					var slide: Vector2 = motion.slide(prev_floor_normal).normalized()
+					if not slide.is_equal_approx(Vector2.ZERO):
+						motion = slide * (motion_slided_up.length())  # alternative use original_motion.length() to also take account of the y value
+						continue_loop = true
+				else:
+					position = tmp_position
 		
 		sliding_enabled = true
 		can_apply_constant_speed = not can_apply_constant_speed and sliding_enabled

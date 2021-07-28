@@ -185,6 +185,9 @@ func custom_move_and_slide():
 			last_normal = collision.normal # for debug
 
 			_set_collision_direction(collision)
+			
+			if collision.remainder.is_equal_approx(Vector2.ZERO):
+				break
 	
 			if on_floor and stop_on_slope and collision.remainder.slide(up_direction).length() <= 0.01:
 				if (motion.normalized() + up_direction).length() < 0.01 :
@@ -232,20 +235,13 @@ func custom_move_and_slide():
 					linear_velocity = linear_velocity.slide(up_direction)
 					motion = motion.slide(up_direction)
 			last_travel = collision.travel
-		elif constant_speed_on_floor:
+		elif constant_speed_on_floor and first_slide and not is_equal_approx(floor_snap_strength, 0) and was_on_floor and will_be_floor_snap():
 			can_apply_constant_speed = first_slide
-			if not is_equal_approx(floor_snap_strength, 0) and was_on_floor and first_slide:
-				var tmp_position = position
-				position = previous_pos
-				floor_snap()
-				if on_floor and not motion.is_equal_approx(Vector2.ZERO):
-					var slide: Vector2 = motion.slide(prev_floor_normal).normalized()
-					if not slide.is_equal_approx(Vector2.ZERO):
-						motion = slide * (motion_slided_up.length())  # alternative use original_motion.length() to also take account of the y value
-						continue_loop = true
-				else:
-					position = tmp_position
-		
+			position = previous_pos
+			var slide: Vector2 = motion.slide(prev_floor_normal).normalized()
+			if not slide.is_equal_approx(Vector2.ZERO):
+				motion = slide * (motion_slided_up.length())  # alternative use original_motion.length() to also take account of the y value
+				continue_loop = true
 		sliding_enabled = true
 		can_apply_constant_speed = not can_apply_constant_speed and sliding_enabled
 		first_slide = false
@@ -283,6 +279,15 @@ func _set_collision_direction(collision):
 		on_floor_body = collision.get_collider_rid()
 		on_wall = true
 
+func will_be_floor_snap():
+	if up_direction == Vector2.ZERO or is_equal_approx(floor_snap_strength, 0) or on_floor or not was_on_floor or linear_velocity.dot(up_direction) > 0: return false
+	var collision := custom_move_and_collide(up_direction * -floor_snap_strength, infinite_inertia, false, true)
+	if collision:
+		if acos(collision.normal.dot(up_direction)) <= floor_max_angle + FLOOR_ANGLE_THRESHOLD:
+			return true
+	
+	return false
+	
 func floor_snap():
 	if up_direction == Vector2.ZERO or is_equal_approx(floor_snap_strength, 0) or on_floor or not was_on_floor or linear_velocity.dot(up_direction) > 0: return
 	

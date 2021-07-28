@@ -1,6 +1,7 @@
-[gd_scene load_steps=14 format=3 uid="uid://cm0rtrl1isnu"]
+[gd_scene load_steps=15 format=3 uid="uid://cm0rtrl1isnu"]
 
 [ext_resource type="Script" path="res://Main.gd" id="2"]
+[ext_resource type="Script" path="res://Pause.gd" id="2_pn06j"]
 [ext_resource type="Texture2D" uid="uid://gs60kyx7uk5u" path="res://grid.png" id="3"]
 [ext_resource type="Texture2D" uid="uid://c3pijaeyyp4xr" path="res://icon.png" id="4"]
 
@@ -84,6 +85,10 @@ tracks/0/keys = {
 
 [node name="Main" type="Node2D"]
 script = ExtResource( "2" )
+
+[node name="Pause" type="Node" parent="."]
+process_mode = 3
+script = ExtResource( "2_pn06j" )
 
 [node name="TextureRect" type="TextureRect" parent="."]
 modulate = Color(0.282353, 0.282353, 0.282353, 1)

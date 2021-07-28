@@ -185,20 +185,18 @@ func custom_move_and_slide():
 			last_normal = collision.normal # for debug
 
 			_set_collision_direction(collision)
+	
+			if on_floor and stop_on_slope and ((motion.normalized() + up_direction).length() < 0.01):
+				if collision.travel.length() > get_safe_margin():
+					position = position - collision.travel.slide(up_direction)
+				else:
+					position = position - collision.travel
+				linear_velocity = Vector2.ZERO
+				return
 			
 			if collision.remainder.is_equal_approx(Vector2.ZERO):
 				motion = Vector2.ZERO
-				break
-	
-			if on_floor and stop_on_slope and collision.remainder.slide(up_direction).length() <= 0.01:
-				if (motion.normalized() + up_direction).length() < 0.01 :
-					if collision.travel.length() > get_safe_margin():
-						position = position - collision.travel.slide(up_direction)
-					else:
-						position = position - collision.travel
-					linear_velocity = Vector2.ZERO
-					return
-							
+				break			
 			# move on floor only checks
 			if move_on_floor_only and on_wall and motion_slided_up.dot(collision.normal) < 0:
 				# prevent to move against wall
@@ -225,7 +223,11 @@ func custom_move_and_slide():
 					motion = slide * (motion_slided_up.length() - collision.travel.slide(up_direction).length() - last_travel.slide(up_direction).length())
 			# prevent to move against wall
 			elif (sliding_enabled or not on_floor) and not (on_ceiling and not slide_on_ceiling and linear_velocity.dot(up_direction) > 0):
-				motion = collision.remainder.slide(collision.normal)
+				var slide_motion := collision.remainder.slide(collision.normal)
+				if slide_motion.dot(linear_velocity) > 0.0:
+					motion = slide_motion
+				else:
+					motion = Vector2()
 				if slide_on_ceiling and on_ceiling and linear_velocity.dot(up_direction) > 0:
 					linear_velocity = linear_velocity.slide(collision.normal)
 				elif slide_on_ceiling and on_ceiling: # remove x when fall to avoid acceleration

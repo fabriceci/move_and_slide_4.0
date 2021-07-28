@@ -336,6 +336,18 @@ text = "HUD"
 structured_text_bidi_override_options = []
 script = null
 
+[node name="PauseLabel" type="Label" parent="CanvasLayer/Control"]
+offset_left = 22.6525
+offset_top = 546.181
+offset_right = 134.653
+offset_bottom = 577.181
+custom_font_sizes/font_size = 20
+structured_text_bidi_override_options = []
+script = null
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
 [connection signal="item_selected" from="CanvasLayer/Control/ModeItemList" to="." method="_on_ModeItemList_item_selected"]
 [connection signal="toggled" from="CanvasLayer/Control/StopButton" to="." method="_on_StopButton_toggled"]
 [connection signal="toggled" from="CanvasLayer/Control/SnapButton" to="." method="_on_SnapButton_toggled"]

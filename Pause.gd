@@ -8,6 +8,10 @@ func _physics_process(_delta):
 		paused = !paused
 		get_tree().paused = paused
 		step_once = false
+		if paused:
+			owner.n_pause_label.text = "PAUSE MODE"
+		else:
+			owner.n_pause_label.text = ""
 	
 	if paused:
 		if step_once:

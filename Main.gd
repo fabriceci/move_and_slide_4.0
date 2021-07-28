@@ -1,7 +1,6 @@
 extends Node2D
 
-@onready var n_pol2D = $Level/Base/Polygon2D
-@onready var n_collisionPol2D = $Level/Base/CollisionPolygon2D
+@onready var n_pause_label = $CanvasLayer/Control/PauseLabel
 const PlayerClassic: PackedScene = preload("res://Player/Current/Player.tscn")
 const PlayerCustom: PackedScene = preload("res://Player/New/NewPlayer.tscn")
 var player_position := Vector2.ZERO

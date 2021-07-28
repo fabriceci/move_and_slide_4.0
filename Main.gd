@@ -28,7 +28,7 @@ func _physics_process(delta):
 	
 	$CanvasLayer/Control/HUDLabel.text = "FPS " + str(Engine.get_frames_per_second()) + '\n'
 	$CanvasLayer/Control/HUDLabel.text += "Position " + str($Player.global_position) + '\n'
-	$CanvasLayer/Control/HUDLabel.text += "Linear Vel " + str(linear_vel) + ' Length %.3f \n' % linear_vel.length()
+	$CanvasLayer/Control/HUDLabel.text += "Linear Vel " + str(linear_vel) + ' Length %.0f \n' % round(linear_vel.length())
 	$CanvasLayer/Control/HUDLabel.text += $Player.get_velocity_str() + '\n'
 	$CanvasLayer/Control/HUDLabel.text += "State: " + $Player.get_state_str()
 	if $Player.raycast.is_colliding():

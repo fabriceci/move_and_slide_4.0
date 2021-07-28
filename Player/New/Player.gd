@@ -232,7 +232,9 @@ func custom_move_and_slide():
 					linear_velocity = linear_velocity.slide(up_direction)
 					motion = motion.slide(up_direction)
 			last_travel = collision.travel
-		elif constant_speed_on_floor and not is_equal_approx(floor_snap_strength, 0) and was_on_floor and first_slide:
+		elif constant_speed_on_floor:
+			can_apply_constant_speed = first_slide
+			if not is_equal_approx(floor_snap_strength, 0) and was_on_floor and first_slide:
 				var tmp_position = position
 				position = previous_pos
 				floor_snap()

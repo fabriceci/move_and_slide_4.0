@@ -25,7 +25,7 @@ func _physics_process(delta):
 	if not $Player: return
 	var linear_vel : Vector2 = (player_position - $Player.global_position) / get_physics_process_delta_time()
 	player_position = $Player.global_position
-	
+
 	$CanvasLayer/Control/HUDLabel.text = "FPS " + str(Engine.get_frames_per_second()) + '\n'
 	$CanvasLayer/Control/HUDLabel.text += "Position " + str($Player.global_position) + '\n'
 	$CanvasLayer/Control/HUDLabel.text += "Linear Vel " + str(linear_vel) + ' Length %.0f \n' % round(linear_vel.length())
@@ -39,7 +39,6 @@ func _physics_process(delta):
 		if $Player.on_floor:
 			$CanvasLayer/Control/HUDLabel.text += "\nFloor normal: " + str($Player.floor_normal)
 	$CanvasLayer/Control/HUDLabel.text += "\nPlatform: " + platform_velocity
-	
 
 func _on_StopButton_toggled(button_pressed):
 	Global.STOP_ON_SLOPE = button_pressed

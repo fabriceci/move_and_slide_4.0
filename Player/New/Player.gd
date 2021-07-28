@@ -187,6 +187,7 @@ func custom_move_and_slide():
 			_set_collision_direction(collision)
 			
 			if collision.remainder.is_equal_approx(Vector2.ZERO):
+				motion = Vector2.ZERO
 				break
 	
 			if on_floor and stop_on_slope and collision.remainder.slide(up_direction).length() <= 0.01:
@@ -275,7 +276,8 @@ func _set_collision_direction(collision):
 		on_ceiling = true
 	else:
 		floor_velocity = collision.collider_velocity
-		on_floor_layer = collision.collider.get_collision_layer()
+		if collision.collider.has_method("get_collision_layer"): # need a way to retrieve collision layer for tilemap
+			on_floor_layer = collision.collider.get_collision_layer()
 		on_floor_body = collision.get_collider_rid()
 		on_wall = true
 

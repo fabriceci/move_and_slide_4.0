@@ -235,8 +235,8 @@ func custom_move_and_slide():
 					linear_velocity = linear_velocity.slide(up_direction)
 					motion = motion.slide(up_direction)
 			last_travel = collision.travel
-		elif constant_speed_on_floor and first_slide and not is_equal_approx(floor_snap_strength, 0) and was_on_floor and will_be_floor_snap():
-			can_apply_constant_speed = first_slide
+		elif constant_speed_on_floor and first_slide and not is_equal_approx(floor_snap_strength, 0) and was_on_floor and _on_floor_if_snapped():
+			can_apply_constant_speed = false
 			position = previous_pos
 			var slide: Vector2 = motion.slide(prev_floor_normal).normalized()
 			if not slide.is_equal_approx(Vector2.ZERO):
@@ -279,7 +279,7 @@ func _set_collision_direction(collision):
 		on_floor_body = collision.get_collider_rid()
 		on_wall = true
 
-func will_be_floor_snap():
+func _on_floor_if_snapped():
 	if up_direction == Vector2.ZERO or is_equal_approx(floor_snap_strength, 0) or on_floor or not was_on_floor or linear_velocity.dot(up_direction) > 0: return false
 	var collision := custom_move_and_collide(up_direction * -floor_snap_strength, infinite_inertia, false, true)
 	if collision:

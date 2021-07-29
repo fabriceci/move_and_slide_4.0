@@ -171,7 +171,7 @@ func custom_move_and_slide():
 	floor_normal = Vector2()
 	
 	# No sliding on first attempt to keep floor motion stable when possible.
-	var sliding_enabled := not stop_on_slope
+	var sliding_enabled := not stop_on_slope or up_direction == Vector2.ZERO
 	var first_slide := true
 	var can_apply_constant_speed := false
 	var last_travel := Vector2()

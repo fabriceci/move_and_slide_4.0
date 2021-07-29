@@ -201,7 +201,6 @@ func custom_move_and_slide():
 			if not on_moving_surface and on_wall and motion_slided_up.dot(collision.normal) < 0:
 				# prevent to move against wall
 				if was_on_floor and not on_floor and collision.travel.dot(up_direction) > 0 and linear_velocity.dot(up_direction) <= 0 : # prevent the move against wall
-					print("BLOCKED")
 					position = position - up_direction * up_direction.dot(collision.travel) # remove the x from the vector when up direction is Vector2.UP
 					on_floor = true
 					on_floor_body = prev_floor_body

@@ -50,9 +50,6 @@ func _on_SnapButton_toggled(button_pressed):
 func _on_ConstantButton_toggled(button_pressed):
 	Global.CONSTANT_SPEED_ON_FLOOR = button_pressed
 
-func _on_MoveOnFloorButton_toggled(button_pressed):
-	Global.MOVE_ON_FLOOR_ONLY = button_pressed
-
 func _on_SlideCeilingButton_toggled(button_pressed):
 	Global.SLIDE_ON_CEILING = button_pressed
 
@@ -97,7 +94,6 @@ func on_platform_signal(message):
 	
 func ui_options(p_visible: bool):
 	$CanvasLayer/Control/ConstantButton.visible = p_visible
-	$CanvasLayer/Control/MoveOnFloorButton.visible = p_visible
 	$CanvasLayer/Control/SlideCeilingButton.visible = p_visible
 
 

@@ -10,7 +10,7 @@ func _ready():
 	$Camera2D.current = true
 
 func _process(_delta):
-	floor_snap_strength = Global.SNAP_FORCE
+	floor_snap_length = Global.SNAP_FORCE
 	constant_speed_on_floor = Global.CONSTANT_SPEED_ON_FLOOR
 	slide_on_ceiling = Global.SLIDE_ON_CEILING
 	stop_on_slope = Global.STOP_ON_SLOPE
@@ -22,12 +22,12 @@ func _process(_delta):
 func _physics_process(delta):
 	linear_velocity = linear_velocity + Global.GRAVITY_FORCE * delta
 	if Global.APPLY_SNAP:
-		floor_snap_strength = Global.SNAP_FORCE
+		floor_snap_length = Global.SNAP_FORCE
 	else:
-		floor_snap_strength = 0
+		floor_snap_length = 0
 	if Input.is_action_just_pressed('ui_accept') and (Global.INFINITE_JUMP or util_on_floor()):
 		linear_velocity.y = linear_velocity.y + Global.JUMP_FORCE
-		floor_snap_strength = 0
+		floor_snap_length = 0
 	
 	var speed = Global.RUN_SPEED if Input.is_action_pressed('run') and util_on_moving_surface() else Global.NORMAL_SPEED
 	var direction = _get_direction()
@@ -47,12 +47,10 @@ func _physics_process(delta):
 		linear_velocity.y = 70
 
 	if use_build_in:
-		move_and_slide()
+		var _collision = move_and_slide()
 	else:
 		gd_move_and_slide()
-	
-	#if util_on_floor() and linear_velocity.y > 0 :
-	#	linear_velocity.y = 0
+
 
 var on_floor := false
 var on_floor_body:= RID()
@@ -215,8 +213,8 @@ func _set_collision_direction(collision):
 		on_wall = true
 		
 func custom_snap():
-	if is_equal_approx(floor_snap_strength, 0) or on_floor or not was_on_floor: return
-	var collision = move_and_collide(up_direction * -floor_snap_strength, infinite_inertia, false, true)
+	if is_equal_approx(floor_snap_length, 0) or on_floor or not was_on_floor: return
+	var collision = move_and_collide(up_direction * -floor_snap_length, infinite_inertia, false, true)
 	
 	if collision:
 		var apply := true
@@ -263,11 +261,9 @@ func get_state_str():
 		state.append("floor")
 	if on_wall or is_on_wall():
 		state.append("wall")
-	if on_air or is_on_air():
-		state.append("air")
 	
 	if state.size() == 0:
-		state.append("unknow")
+		state.append("air")
 	return array_join(state, " & ")
 
 func array_join(arr : Array, glue : String = '') -> String:

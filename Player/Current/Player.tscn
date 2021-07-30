@@ -7,7 +7,7 @@
 radius = 30.7698
 
 [node name="Player" type="CharacterBody2D"]
-floor_snap_strength = 2.66964e+36
+floor_snap_length = 4.48416e-44
 script = ExtResource( "2" )
 
 [node name="icon" type="Sprite2D" parent="."]

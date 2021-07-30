@@ -22,7 +22,7 @@ func _process(_delta):
 		slow_mo_idx += 1
 		Engine.time_scale = slow_mo[slow_mo_idx % slow_mo.size()]
 	
-func _physics_process(delta):
+func _physics_process(_delta):
 	if not $Player: return
 	var linear_vel : Vector2 = (player_position - $Player.global_position) / get_physics_process_delta_time()
 	player_position = $Player.global_position

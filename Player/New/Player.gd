@@ -9,7 +9,7 @@ var auto := false
 func _ready():
 	$Camera2D.current = true
 
-func _process(delta):
+func _process(_delta):
 	floor_snap_length = Global.SNAP_FORCE
 	constant_speed_on_floor = Global.CONSTANT_SPEED_ON_FLOOR
 	slide_on_ceiling = Global.SLIDE_ON_CEILING
@@ -170,7 +170,7 @@ func custom_move_and_slide():
 	# No sliding on first attempt to keep floor motion stable when possible.
 	var sliding_enabled := not stop_on_slope or up_direction == Vector2.ZERO
 	var first_slide := true
-	var can_apply_constant_speed := false
+	var can_apply_constant_speed := sliding_enabled
 	var last_travel := Vector2.ZERO
 
 	for _i in range(max_slides):
@@ -188,7 +188,7 @@ func custom_move_and_slide():
 				else:
 					position = position - collision.travel
 				linear_velocity = Vector2.ZERO
-				motion = Vector2.ZERO;
+				motion = Vector2.ZERO
 				break
 
 			if collision.remainder.is_equal_approx(Vector2.ZERO):
@@ -213,8 +213,9 @@ func custom_move_and_slide():
 					motion = motion.slide(collision.normal)
 				else:
 					motion = collision.remainder
-			# constant Speed when the slope is up
-			elif constant_speed_on_floor and util_on_floor_only() and was_on_floor and can_apply_constant_speed and motion.dot(collision.normal) < 0:
+			# constant Speed when the slope is upward
+			elif constant_speed_on_floor and util_on_floor_only() and can_apply_constant_speed and was_on_floor and motion.dot(collision.normal) < 0:
+				can_apply_constant_speed = false
 				var slide: Vector2 = collision.remainder.slide(collision.normal).normalized()
 				if not slide.is_equal_approx(Vector2.ZERO):
 					motion = slide * (motion_slided_up.length() - collision.travel.slide(up_direction).length() - last_travel.slide(up_direction).length())
@@ -238,13 +239,14 @@ func custom_move_and_slide():
 			last_travel = collision.travel
 		elif constant_speed_on_floor and first_slide and was_on_floor and not is_equal_approx(floor_snap_length, 0) and _on_floor_if_snapped():
 			can_apply_constant_speed = false
+			sliding_enabled = true # avoid to apply two time constant speed
 			position = previous_pos
 			var slide: Vector2 = motion.slide(prev_floor_normal).normalized()
 			if not slide.is_equal_approx(Vector2.ZERO):
 				motion = slide * (motion_slided_up.length())  # alternative use original_motion.length() to also take account of the y value
 				collision = true
+		can_apply_constant_speed = not can_apply_constant_speed and not sliding_enabled
 		sliding_enabled = true
-		can_apply_constant_speed = not can_apply_constant_speed and sliding_enabled
 		first_slide = false
 
 		# debug

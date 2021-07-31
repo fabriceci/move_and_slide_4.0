@@ -172,6 +172,7 @@ func custom_move_and_slide():
 	var first_slide := true
 	var can_apply_constant_speed := sliding_enabled
 	var last_travel := Vector2.ZERO
+	var vel_dir_facing_up := linear_velocity.dot(up_direction) > 0
 
 	for _i in range(max_slides):
 		on_walkable_surface = false
@@ -197,7 +198,7 @@ func custom_move_and_slide():
 			# move on floor only checks
 			if not on_walkable_surface and on_wall and motion_slided_up.dot(collision.normal) < 0:
 				# prevent to move against wall
-				if was_on_floor and not on_floor and collision.travel.dot(up_direction) > 0 and linear_velocity.dot(up_direction) <= 0 : # prevent the move against wall
+				if was_on_floor and not on_floor and collision.travel.dot(up_direction) > 0 and not vel_dir_facing_up : # prevent the move against wall
 					position = position - up_direction * up_direction.dot(collision.travel) # remove the x from the vector when up direction is Vector2.UP
 					on_floor = true
 					platform_rid = prev_platform_rid
@@ -220,20 +221,20 @@ func custom_move_and_slide():
 				if not slide.is_equal_approx(Vector2.ZERO):
 					motion = slide * (motion_slided_up.length() - collision.travel.slide(up_direction).length() - last_travel.slide(up_direction).length())
 			# prevent to move against wall
-			elif (sliding_enabled or not on_floor) and not (on_ceiling and not slide_on_ceiling and linear_velocity.dot(up_direction) > 0):
+			elif (sliding_enabled or not on_floor) and (not on_ceiling or slide_on_ceiling or not vel_dir_facing_up):
 				var slide_motion := collision.remainder.slide(collision.normal)
 				if slide_motion.dot(linear_velocity) > 0.0:
 					motion = slide_motion
 				else:
 					motion = Vector2.ZERO
 				if slide_on_ceiling and on_ceiling:
-					if linear_velocity.dot(up_direction) > 0:
+					if vel_dir_facing_up:
 						linear_velocity = linear_velocity.slide(collision.normal)
 					else: # remove x when fall to avoid acceleration
 						linear_velocity = up_direction * up_direction.dot(linear_velocity)
 			else:
 				motion = collision.remainder
-				if on_ceiling and not slide_on_ceiling and linear_velocity.dot(up_direction) > 0:
+				if on_ceiling and not slide_on_ceiling and vel_dir_facing_up:
 					linear_velocity = linear_velocity.slide(up_direction)
 					motion = motion.slide(up_direction)
 			last_travel = collision.travel
@@ -260,7 +261,7 @@ func custom_move_and_slide():
 	if not on_floor and not on_wall:
 		linear_velocity = linear_velocity + current_platform_velocity # Add last floor velocity when just left a moving platform
 
-	if on_floor and linear_velocity.dot(up_direction) <= 0:
+	if on_floor and not vel_dir_facing_up:
 		linear_velocity = linear_velocity.slide(up_direction)
 
 func _set_collision_direction(collision):

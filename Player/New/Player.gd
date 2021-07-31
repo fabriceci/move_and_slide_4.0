@@ -30,7 +30,7 @@ func _physics_process(delta):
 	if Input.is_action_just_pressed('ui_accept') and (Global.INFINITE_JUMP or util_on_floor()):
 		linear_velocity.y = linear_velocity.y + Global.JUMP_FORCE
 
-	var speed = Global.RUN_SPEED if Input.is_action_pressed('run') and on_moving_surface else Global.NORMAL_SPEED
+	var speed = Global.RUN_SPEED if Input.is_action_pressed('run') and on_walkable_surface else Global.NORMAL_SPEED
 	var direction = _get_direction()
 	if direction.x:
 		linear_velocity.x = direction.x * speed
@@ -57,7 +57,7 @@ var platform_rid :=  RID()
 var platform_layer:int
 var on_ceiling := false
 var on_wall = false
-var on_moving_surface = false
+var on_walkable_surface = false
 var floor_normal := Vector2.ZERO
 var platform_velocity := Vector2.ZERO
 var FLOOR_ANGLE_THRESHOLD := 0.01
@@ -174,7 +174,7 @@ func custom_move_and_slide():
 	var last_travel := Vector2.ZERO
 
 	for _i in range(max_slides):
-		on_moving_surface = false
+		on_walkable_surface = false
 		var previous_pos = position
 		
 		var collision = custom_move_and_collide(motion, infinite_inertia, true, false, not sliding_enabled)
@@ -195,7 +195,7 @@ func custom_move_and_slide():
 				motion = Vector2.ZERO
 				break
 			# move on floor only checks
-			if not on_moving_surface and on_wall and motion_slided_up.dot(collision.normal) < 0:
+			if not on_walkable_surface and on_wall and motion_slided_up.dot(collision.normal) < 0:
 				# prevent to move against wall
 				if was_on_floor and not on_floor and collision.travel.dot(up_direction) > 0 and linear_velocity.dot(up_direction) <= 0 : # prevent the move against wall
 					position = position - up_direction * up_direction.dot(collision.travel) # remove the x from the vector when up direction is Vector2.UP
@@ -267,7 +267,7 @@ func _set_collision_direction(collision):
 	if(up_direction == Vector2.ZERO): return
 
 	if acos(collision.normal.dot(up_direction)) <= move_max_angle + FLOOR_ANGLE_THRESHOLD:
-		on_moving_surface = true
+		on_walkable_surface = true
 
 	if acos(collision.normal.dot(up_direction)) <= floor_max_angle + FLOOR_ANGLE_THRESHOLD:
 		on_floor = true
@@ -311,7 +311,7 @@ func floor_snap():
 			var travelled = collision.travel
 
 			if collision_angle <= move_max_angle + FLOOR_ANGLE_THRESHOLD:
-				on_moving_surface = true
+				on_walkable_surface = true
 
 			if stop_on_slope:
 				# move and collide may stray the object a bit because of pre un-stucking,

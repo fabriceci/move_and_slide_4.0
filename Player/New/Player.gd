@@ -237,7 +237,7 @@ func custom_move_and_slide():
 					linear_velocity = linear_velocity.slide(up_direction)
 					motion = motion.slide(up_direction)
 			last_travel = collision.travel
-		elif constant_speed_on_floor and first_slide and was_on_floor and not is_equal_approx(floor_snap_length, 0) and _on_floor_if_snapped():
+		elif constant_speed_on_floor and first_slide and _on_floor_if_snapped():
 			can_apply_constant_speed = false
 			sliding_enabled = true # avoid to apply two time constant speed
 			position = previous_pos

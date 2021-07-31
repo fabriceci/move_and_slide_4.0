@@ -208,8 +208,8 @@ func custom_move_and_slide():
 					linear_velocity = Vector2.ZERO
 					motion = Vector2.ZERO
 					break
-				# prevent to move against wall on air
-				elif sliding_enabled and not on_floor: # prevent to move against the wall in the air
+				# prevent to move against the wall in the air
+				elif not on_floor:
 					motion = up_direction * up_direction.dot(collision.remainder)
 					motion = motion.slide(collision.normal)
 				else:

@@ -197,8 +197,8 @@ func custom_move_and_slide():
 				break
 			# move on floor only checks
 			if not on_walkable_surface and on_wall and motion_slided_up.dot(collision.normal) < 0:
-				# prevent to move against wall
-				if was_on_floor and not on_floor and collision.travel.dot(up_direction) > 0 and not vel_dir_facing_up : # prevent the move against wall
+				# constraints to move only until move_max_angle
+				if was_on_floor and not on_floor and not vel_dir_facing_up :
 					position = position - up_direction * up_direction.dot(collision.travel) # remove the x from the vector when up direction is Vector2.UP
 					on_floor = true
 					platform_rid = prev_platform_rid
@@ -212,6 +212,7 @@ func custom_move_and_slide():
 				elif not on_floor:
 					motion = up_direction * up_direction.dot(collision.remainder)
 					motion = motion.slide(collision.normal)
+				# keep motion
 				else:
 					motion = collision.remainder
 			# constant Speed when the slope is upward

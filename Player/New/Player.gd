@@ -196,9 +196,8 @@ func custom_move_and_slide():
 			if move_on_floor_only and on_wall and motion_slided_up.dot(collision.normal) <= 0:
 				# constraints to move only
 				if was_on_floor and not on_floor and not vel_dir_facing_up:
-					position = position - collision.travel
-					if collision.travel.length() > get_safe_margin() + 1: # If the movement is large the body can be prevented from reaching the walls.
-						custom_move_and_collide(motion, infinite_inertia, true, false, true)
+					if collision.travel.length() <= get_safe_margin(): # If the movement is large the body can be prevented from reaching the walls.
+						position = position - collision.travel
 					on_floor = true
 					platform_rid = prev_platform_rid
 					platform_layer = prev_platform_layer

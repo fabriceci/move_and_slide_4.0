@@ -305,6 +305,20 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
+[node name="MoveOnFloorOnly" type="CheckButton" parent="CanvasLayer/Control"]
+offset_left = 799.575
+offset_top = 262.569
+offset_right = 1024.57
+offset_bottom = 302.569
+focus_mode = 0
+pressed = true
+text = "Move on floor only"
+align = 2
+script = null
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
 [node name="InfiniteJumpButton" type="CheckButton" parent="CanvasLayer/Control"]
 offset_left = 607.237
 offset_top = 4.30715
@@ -365,36 +379,11 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="MoveMaxAngleSlider" type="HSlider" parent="CanvasLayer/Control"]
-offset_left = 960.0
-offset_top = 276.0
-offset_right = 1011.0
-offset_bottom = 292.0
-focus_mode = 0
-step = 5.0
-value = 45.0
-script = null
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="MoveMaxAngleLabel" type="Label" parent="CanvasLayer/Control"]
-offset_left = 803.466
-offset_top = 268.0
-offset_right = 928.466
-offset_bottom = 294.0
-text = "Move max angle"
-structured_text_bidi_override_options = []
-script = null
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
 [node name="FloorMaxAngleSlider" type="HSlider" parent="CanvasLayer/Control"]
 offset_left = 960.0
-offset_top = 303.0
+offset_top = 312.0
 offset_right = 1008.0
-offset_bottom = 319.0
+offset_bottom = 328.0
 focus_mode = 0
 step = 5.0
 value = 45.0
@@ -405,9 +394,9 @@ __meta__ = {
 
 [node name="FloorMaxAngleLabel" type="Label" parent="CanvasLayer/Control"]
 offset_left = 807.542
-offset_top = 298.0
+offset_top = 307.0
 offset_right = 929.542
-offset_bottom = 324.0
+offset_bottom = 333.0
 text = "Floor max angle"
 structured_text_bidi_override_options = []
 script = null
@@ -417,8 +406,8 @@ script = null
 [connection signal="toggled" from="CanvasLayer/Control/SnapButton" to="." method="_on_SnapButton_toggled"]
 [connection signal="toggled" from="CanvasLayer/Control/ConstantButton" to="." method="_on_ConstantButton_toggled"]
 [connection signal="toggled" from="CanvasLayer/Control/SlideCeilingButton" to="." method="_on_SlideCeilingButton_toggled"]
+[connection signal="toggled" from="CanvasLayer/Control/MoveOnFloorOnly" to="." method="_on_MoveOnFloorOnly_toggled"]
 [connection signal="toggled" from="CanvasLayer/Control/InfiniteJumpButton" to="." method="_on_InfiniteJumpButton_toggled"]
 [connection signal="toggled" from="CanvasLayer/Control/AirFrictionButton" to="." method="_on_AirFrictionButton_toggled"]
 [connection signal="toggled" from="CanvasLayer/Control/SlowdownButton" to="." method="_on_SlowdownButton_toggled"]
-[connection signal="value_changed" from="CanvasLayer/Control/MoveMaxAngleSlider" to="." method="_on_MoveMaxAngleSlider_value_changed"]
 [connection signal="value_changed" from="CanvasLayer/Control/FloorMaxAngleSlider" to="." method="_on_FloorMaxAngleSlider_value_changed"]

@@ -15,7 +15,7 @@ func _process(_delta):
 	slide_on_ceiling = Global.SLIDE_ON_CEILING
 	stop_on_slope = Global.STOP_ON_SLOPE
 	up_direction = Global.UP_DIRECTION
-	move_max_angle = Global.MOVE_MAX_ANGLE
+	move_on_floor_only = Global.MOVE_ON_FLOOR_ONLY
 	floor_max_angle = Global.FLOOR_MAX_ANGLE
 	update()
 
@@ -29,7 +29,7 @@ func _physics_process(delta):
 		linear_velocity.y = linear_velocity.y + Global.JUMP_FORCE
 		floor_snap_length = 0
 	
-	var speed = Global.RUN_SPEED if Input.is_action_pressed('run') and util_on_walkable_surface() else Global.NORMAL_SPEED
+	var speed = Global.RUN_SPEED if Input.is_action_pressed('run') and util_on_floor() else Global.NORMAL_SPEED
 	var direction = _get_direction()
 	if direction.x:
 		linear_velocity.x = direction.x * speed 
@@ -244,11 +244,6 @@ func _draw():
 	
 func util_on_floor():
 	return is_on_floor() or on_floor
-
-func util_on_walkable_surface():
-	if use_build_in:
-		return is_on_walkable_surface()
-	return on_floor
 
 func util_on_wall():
 	return is_on_wall() or on_wall

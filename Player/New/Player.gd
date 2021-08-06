@@ -16,7 +16,7 @@ func _process(_delta):
 	slide_on_ceiling = Global.SLIDE_ON_CEILING
 	stop_on_slope = Global.STOP_ON_SLOPE
 	up_direction = Global.UP_DIRECTION
-	move_max_angle = Global.MOVE_MAX_ANGLE
+	move_on_floor_only = Global.MOVE_ON_FLOOR_ONLY
 	floor_max_angle = Global.FLOOR_MAX_ANGLE
 	update()
 
@@ -31,7 +31,7 @@ func _physics_process(delta):
 	if Input.is_action_just_pressed('ui_accept') and (Global.INFINITE_JUMP or util_on_floor()):
 		linear_velocity.y = linear_velocity.y + Global.JUMP_FORCE
 
-	var speed = Global.RUN_SPEED if Input.is_action_pressed('run') and on_floor else Global.NORMAL_SPEED
+	var speed = Global.RUN_SPEED if Input.is_action_pressed('run') and util_on_floor() else Global.NORMAL_SPEED
 	var direction = _get_direction()
 	if direction.x:
 		linear_velocity.x = direction.x * speed
@@ -176,7 +176,7 @@ func custom_move_and_slide():
 
 	for _i in range(max_slides):
 		var previous_pos = position
-		
+
 		var collision = custom_move_and_collide(motion, infinite_inertia, true, false, not sliding_enabled)
 		if collision:
 			last_normal = collision.normal # for debug
@@ -194,8 +194,11 @@ func custom_move_and_slide():
 				break
 			# move on floor only checks
 			if move_on_floor_only and on_wall and motion_slided_up.dot(collision.normal) <= 0:
-				# constraints to move only until move_max_angle
+				# constraints to move only
 				if was_on_floor and not on_floor and not vel_dir_facing_up:
+					position = position - collision.travel
+					if collision.travel.length() > get_safe_margin() + 1: # If the movement is large the body can be prevented from reaching the walls.
+						custom_move_and_collide(motion, infinite_inertia, true, false, true)
 					on_floor = true
 					platform_rid = prev_platform_rid
 					platform_layer = prev_platform_layer

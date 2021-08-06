@@ -11,7 +11,6 @@ var slow_mo_idx := 0
 var platform_velocity = ""
 
 func _ready():
-	$CanvasLayer/Control/MoveMaxAngleLabel.text = "Move max angle: %.0f°" % round(rad2deg(Global.MOVE_MAX_ANGLE))
 	$CanvasLayer/Control/FloorMaxAngleLabel.text = "Floor max angle: %.0f°" % round(rad2deg(Global.FLOOR_MAX_ANGLE)) 
 	$CanvasLayer/Control/ModeItemList.select(0)
 	set_mode(0)
@@ -95,18 +94,10 @@ func ui_options(p_visible: bool):
 	$CanvasLayer/Control/ConstantButton.visible = p_visible
 	$CanvasLayer/Control/SlideCeilingButton.visible = p_visible
 
-
-func _on_MoveMaxAngleSlider_changed():
-	var value = $CanvasLayer/Control/MoveMaxAngleSlider.value
-	$CanvasLayer/Control/MoveMaxAngleLabel.text = "angle (%f)" % round(value) 
-	#Global.MOVE_MAX_ANGLE = deg2ra
-
-
-func _on_MoveMaxAngleSlider_value_changed(value):
-	$CanvasLayer/Control/MoveMaxAngleLabel.text = "Move max angle: %.0f°" % round(value)
-	Global.MOVE_MAX_ANGLE = deg2rad(value)
-
-
 func _on_FloorMaxAngleSlider_value_changed(value):
 	$CanvasLayer/Control/FloorMaxAngleLabel.text = "Floor max angle: %.0f°" % round(value) 
 	Global.FLOOR_MAX_ANGLE = deg2rad(value)
+
+
+func _on_MoveOnFloorOnly_toggled(button_pressed):
+	Global.MOVE_ON_FLOOR_ONLY = button_pressed

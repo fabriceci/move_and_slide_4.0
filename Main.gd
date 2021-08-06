@@ -11,7 +11,6 @@ var slow_mo_idx := 0
 var platform_velocity = ""
 
 func _ready():
-#	$Level/Base/CollisionPolygon2D.polygon = $Level/Base/Polygon2D.polygon
 	$CanvasLayer/Control/MoveMaxAngleLabel.text = "Move max angle: %.0f°" % round(rad2deg(Global.MOVE_MAX_ANGLE))
 	$CanvasLayer/Control/FloorMaxAngleLabel.text = "Floor max angle: %.0f°" % round(rad2deg(Global.FLOOR_MAX_ANGLE)) 
 	$CanvasLayer/Control/ModeItemList.select(0)

@@ -4,6 +4,7 @@ signal follow_platform(message)
 @onready var raycast := $RayCast2D
 var last_normal = Vector2.ZERO
 var last_motion = Vector2.ZERO
+var move_on_floor_only = true
 
 var auto := false
 func _ready():
@@ -30,7 +31,7 @@ func _physics_process(delta):
 	if Input.is_action_just_pressed('ui_accept') and (Global.INFINITE_JUMP or util_on_floor()):
 		linear_velocity.y = linear_velocity.y + Global.JUMP_FORCE
 
-	var speed = Global.RUN_SPEED if Input.is_action_pressed('run') and on_walkable_surface else Global.NORMAL_SPEED
+	var speed = Global.RUN_SPEED if Input.is_action_pressed('run') and on_floor else Global.NORMAL_SPEED
 	var direction = _get_direction()
 	if direction.x:
 		linear_velocity.x = direction.x * speed
@@ -57,7 +58,6 @@ var platform_rid :=  RID()
 var platform_layer:int
 var on_ceiling := false
 var on_wall = false
-var on_walkable_surface = false
 var floor_normal := Vector2.ZERO
 var platform_velocity := Vector2.ZERO
 var FLOOR_ANGLE_THRESHOLD := 0.01
@@ -169,21 +169,19 @@ func custom_move_and_slide():
 
 	# No sliding on first attempt to keep floor motion stable when possible.
 	var sliding_enabled := not stop_on_slope or up_direction == Vector2.ZERO
-	var first_slide := true
 	var can_apply_constant_speed := sliding_enabled
-	var last_travel := Vector2.ZERO
+	var first_slide := true
 	var vel_dir_facing_up := linear_velocity.dot(up_direction) > 0
+	var last_travel := Vector2.ZERO
 
 	for _i in range(max_slides):
-		on_walkable_surface = false
 		var previous_pos = position
 		
 		var collision = custom_move_and_collide(motion, infinite_inertia, true, false, not sliding_enabled)
 		if collision:
 			last_normal = collision.normal # for debug
 			_set_collision_direction(collision)
-
-			if on_floor and stop_on_slope and ((motion.normalized() + up_direction).length() < 0.01):
+			if on_floor and stop_on_slope and (linear_velocity.normalized() + up_direction).length() < 0.01:
 				if collision.travel.length() > get_safe_margin():
 					position = position - collision.travel.slide(up_direction)
 				else:
@@ -191,15 +189,13 @@ func custom_move_and_slide():
 				linear_velocity = Vector2.ZERO
 				motion = Vector2.ZERO
 				break
-
 			if collision.remainder.is_equal_approx(Vector2.ZERO):
 				motion = Vector2.ZERO
 				break
 			# move on floor only checks
-			if not on_walkable_surface and on_wall and motion_slided_up.dot(collision.normal) < 0:
+			if move_on_floor_only and on_wall and motion_slided_up.dot(collision.normal) <= 0:
 				# constraints to move only until move_max_angle
-				if was_on_floor and not on_floor and not vel_dir_facing_up :
-					position = position - up_direction * up_direction.dot(collision.travel) # remove the x from the vector when up direction is Vector2.UP
+				if was_on_floor and not on_floor and not vel_dir_facing_up:
 					on_floor = true
 					platform_rid = prev_platform_rid
 					platform_layer = prev_platform_layer
@@ -268,9 +264,6 @@ func custom_move_and_slide():
 func _set_collision_direction(collision):
 	if(up_direction == Vector2.ZERO): return
 
-	if acos(collision.normal.dot(up_direction)) <= move_max_angle + FLOOR_ANGLE_THRESHOLD:
-		on_walkable_surface = true
-
 	if acos(collision.normal.dot(up_direction)) <= floor_max_angle + FLOOR_ANGLE_THRESHOLD:
 		on_floor = true
 		floor_normal = collision.normal
@@ -311,9 +304,6 @@ func floor_snap():
 				platform_layer = collision.collider.get_collision_layer()
 			platform_rid = collision.get_collider_rid()
 			var travelled = collision.travel
-
-			if collision_angle <= move_max_angle + FLOOR_ANGLE_THRESHOLD:
-				on_walkable_surface = true
 
 			if stop_on_slope:
 				# move and collide may stray the object a bit because of pre un-stucking,

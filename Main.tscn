@@ -41,6 +41,15 @@ tracks/0/keys = {
 texture = ExtResource( "4" )
 tile_size = Vector2i(64, 64)
 0:0/0 = 0
+0:0/0/flip_h = false
+0:0/0/flip_v = false
+0:0/0/transpose = false
+0:0/0/texture_offset = Vector2i(0, 0)
+0:0/0/modulate = Color(1, 1, 1, 1)
+0:0/0/z_index = 0
+0:0/0/y_sort_origin = 0
+0:0/0/terrain_set = -1
+0:0/0/probability = 1.0
 0:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(-32, -32, 32, -32, 32, 32, -32, 32)
 
 [sub_resource type="TileSet" id="4"]
@@ -96,10 +105,10 @@ script = ExtResource( "2_pn06j" )
 [node name="TextureRect" type="TextureRect" parent="."]
 modulate = Color(0.282353, 0.282353, 0.282353, 1)
 texture_repeat = 2
-offset_left = -2462.45
-offset_top = -2500.0
-offset_right = 3537.55
-offset_bottom = 1500.0
+offset_left = -1073.59
+offset_top = -3164.98
+offset_right = 4926.41
+offset_bottom = 835.017
 texture = ExtResource( "3" )
 expand = true
 stretch_mode = 2
@@ -198,9 +207,8 @@ script = null
 [node name="TileMap" type="TileMap" parent="Level/Node2D2/MovingPlatform"]
 skew = 4.37114e-08
 tile_set = SubResource( "4" )
-show_collision = 1
 format = 2
-tile_data = PackedInt32Array(-65518, 0, 0, -65517, 0, 0, -65516, 0, 0, -589803, 0, 0, -524267, 0, 0, -458731, 0, 0, -393195, 0, 0, -327659, 0, 0, -262123, 0, 0, -196587, 0, 0, -131051, 0, 0, -65515, 0, 0, -65514, 0, 0, -65513, 0, 0, -65512, 0, 0)
+layer_0/tile_data = PackedInt32Array(-65518, 0, 0, -65517, 0, 0, -65516, 0, 0, -589803, 0, 0, -524267, 0, 0, -458731, 0, 0, -393195, 0, 0, -327659, 0, 0, -262123, 0, 0, -196587, 0, 0, -131051, 0, 0, -65515, 0, 0, -65514, 0, 0, -65513, 0, 0, -65512, 0, 0)
 script = null
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Level/Node2D2/MovingPlatform"]
@@ -215,6 +223,13 @@ playback_process_mode = 0
 anims/RESET = SubResource( "11" )
 anims/default = SubResource( "10" )
 blend_times = []
+script = null
+
+[node name="StaticBody2D" type="StaticBody2D" parent="Level"]
+script = null
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="Level/StaticBody2D"]
+polygon = PackedVector2Array(190.421, -1396.88, 101.051, -1396.76, -73.0498, -1401.6, -242.829, -1414.02, -414.225, -1435.92, -583.716, -1466.39, -750.35, -1508.29, -914.128, -1561.61, -1075.05, -1625.41, -1229.31, -1705.39, -1372.13, -1797.76, -1506.39, -1905.36, -1630.18, -2025.33, -1748.77, -2156.04, -1748.25, -2117.7, -1631.13, -1988.2, -1509.25, -1869.17, -1372.13, -1760.62, -1228.35, -1668.26, -1075.05, -1590.18, -914.128, -1523.53, -751.302, -1474.01, -583.716, -1430.21, -414.225, -1399.74, -242.829, -1377.84, -70.6318, -1365.33, 188.516, -1362.6)
 script = null
 
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
@@ -343,7 +358,7 @@ offset_left = 22.6525
 offset_top = 546.181
 offset_right = 134.653
 offset_bottom = 577.181
-custom_font_sizes/font_size = 20
+theme_override_font_sizes/font_size = 20
 structured_text_bidi_override_options = []
 script = null
 __meta__ = {
@@ -356,6 +371,7 @@ offset_top = 276.0
 offset_right = 1011.0
 offset_bottom = 292.0
 focus_mode = 0
+step = 5.0
 value = 45.0
 script = null
 __meta__ = {
@@ -379,8 +395,13 @@ offset_left = 960.0
 offset_top = 303.0
 offset_right = 1008.0
 offset_bottom = 319.0
+focus_mode = 0
+step = 5.0
 value = 45.0
 script = null
+__meta__ = {
+"_edit_use_anchors_": false
+}
 
 [node name="FloorMaxAngleLabel" type="Label" parent="CanvasLayer/Control"]
 offset_left = 807.542

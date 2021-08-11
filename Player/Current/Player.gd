@@ -13,7 +13,7 @@ func _process(_delta):
 	floor_snap_length = Global.SNAP_FORCE
 	constant_speed_on_floor = Global.CONSTANT_SPEED_ON_FLOOR
 	slide_on_ceiling = Global.SLIDE_ON_CEILING
-	stop_on_slope = Global.STOP_ON_SLOPE
+	stop_on_floor_slope = Global.STOP_ON_SLOPE
 	up_direction = Global.UP_DIRECTION
 	move_on_floor_only = Global.MOVE_ON_FLOOR_ONLY
 	floor_max_angle = Global.FLOOR_MAX_ANGLE
@@ -75,16 +75,16 @@ class CustomKinematicCollision2D:
 	func get_collider_rid():
 		return collision_rid
 	
-func custom_move_and_collide(p_motion: Vector2, p_infinite_inertia: bool = true, p_exclude_raycast_shapes: bool = true , p_test_only: bool = false, p_cancel_sliding: bool = true, exlude = []):
+func custom_move_and_collide(p_motion: Vector2, p_test_only: bool = false, p_cancel_sliding: bool = true, exlude = []):
 	var gt := get_global_transform()
 	
 	var margin = get_safe_margin()
 	
 	var result := PhysicsTestMotionResult2D.new()
-	var colliding := PhysicsServer2D.body_test_motion(get_rid(), gt, p_motion, p_infinite_inertia, margin, result, p_exclude_raycast_shapes, exlude)
+	var colliding := PhysicsServer2D.body_test_motion(get_rid(), gt, p_motion, margin, result, exlude)
 	
-	var result_motion := result.motion
-	var result_remainder := result.motion_remainder
+	var result_motion := result.travel
+	var result_remainder := result.remainder
 	
 	if p_cancel_sliding:
 
@@ -106,8 +106,8 @@ func custom_move_and_collide(p_motion: Vector2, p_infinite_inertia: bool = true,
 				motion_normal = p_motion / motion_length
 			
 			# Check depth of recovery.
-			var projected_length := result.motion.dot(motion_normal)
-			var recovery := result.motion - motion_normal * projected_length
+			var projected_length := result.travel.dot(motion_normal)
+			var recovery := result.travel - motion_normal * projected_length
 			var recovery_length := recovery.length()
 			# Fixes cases where canceling slide causes the motion to go too deep into the ground,
 			# Becauses we're only taking rest information into account and not general recovery.
@@ -151,7 +151,7 @@ func gd_move_and_slide():
 	floor_velocity = Vector2()
 	
 	if current_floor_velocity != Vector2.ZERO: # apply platform movement first
-		var platform_collision = custom_move_and_collide(current_floor_velocity * get_physics_process_delta_time(), infinite_inertia, false, false, false, [on_floor_body])
+		var platform_collision = custom_move_and_collide(current_floor_velocity * get_physics_process_delta_time(), false, false, [on_floor_body])
 		if platform_collision:
 			_set_collision_direction(platform_collision)
 
@@ -159,11 +159,11 @@ func gd_move_and_slide():
 	var motion: Vector2 = linear_velocity * get_physics_process_delta_time()
  
 	# No sliding on first attempt to keep motion stable when possible.
-	var sliding_enabled := not stop_on_slope
+	var sliding_enabled := not stop_on_floor_slope
 	for i in range(max_slides):
 		
 		var found_collision := false
-		var collision = custom_move_and_collide(motion, infinite_inertia, true, false, not sliding_enabled)
+		var collision = custom_move_and_collide(motion, false, not sliding_enabled)
 		if not collision:
 			motion = Vector2() #clear because no collision happened and motion completed
  
@@ -173,7 +173,7 @@ func gd_move_and_slide():
 
 			_set_collision_direction(collision)
 
-			if on_floor and stop_on_slope and collision.remainder.slide(up_direction).length() <= 0.01:
+			if on_floor and stop_on_floor_slope and collision.remainder.slide(up_direction).length() <= 0.01:
 				if (body_velocity_normal.normalized() + up_direction).length() < 0.01 :
 					if collision.travel.length() > get_safe_margin():
 						position -= collision.travel.slide(up_direction)
@@ -214,7 +214,7 @@ func _set_collision_direction(collision):
 		
 func custom_snap():
 	if is_equal_approx(floor_snap_length, 0) or on_floor or not was_on_floor: return
-	var collision = move_and_collide(up_direction * -floor_snap_length, infinite_inertia, false, true)
+	var collision = move_and_collide(up_direction * -floor_snap_length, true)
 	
 	if collision:
 		var apply := true
@@ -226,7 +226,7 @@ func custom_snap():
 				floor_velocity = collision.collider_velocity
 				on_floor_body = collision.get_collider_rid()
 				
-				if stop_on_slope:
+				if stop_on_floor_slope:
 					# move and collide may stray the object a bit because of pre un-stucking,
 					# so only ensure that motion happens on floor direction in this case.
 					#if travelled.length() > get_safe_margin() :

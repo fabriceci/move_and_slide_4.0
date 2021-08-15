@@ -11,11 +11,11 @@ func _ready():
 
 func _process(_delta):
 	floor_snap_length = Global.SNAP_FORCE
-	constant_speed_on_floor = Global.CONSTANT_SPEED_ON_FLOOR
+	floor_constant_speed = Global.CONSTANT_SPEED_ON_FLOOR
 	slide_on_ceiling = Global.SLIDE_ON_CEILING
-	stop_on_floor_slope = Global.STOP_ON_SLOPE
+	floor_stop_on_slope = Global.STOP_ON_SLOPE
 	up_direction = Global.UP_DIRECTION
-	move_on_floor_only = Global.MOVE_ON_FLOOR_ONLY
+	floor_block_on_wall = Global.MOVE_ON_FLOOR_ONLY
 	floor_max_angle = Global.FLOOR_MAX_ANGLE
 	update()
 
@@ -47,7 +47,14 @@ func _physics_process(delta):
 		linear_velocity.y = 70
 
 	if use_build_in:
-		var _collision = move_and_slide()
+		var collided = move_and_slide()
+		if collided:
+			print("---")
+			print(rad2deg(get_last_slide_collision().get_angle()))
+			print(rad2deg(get_floor_angle()))
+			var angleDelta = get_last_slide_collision().normal.angle() - (rotation - PI)
+			print(rad2deg(angleDelta))
+			var test = "test"
 	else:
 		gd_move_and_slide()
 
@@ -159,7 +166,7 @@ func gd_move_and_slide():
 	var motion: Vector2 = linear_velocity * get_physics_process_delta_time()
  
 	# No sliding on first attempt to keep motion stable when possible.
-	var sliding_enabled := not stop_on_floor_slope
+	var sliding_enabled := not floor_stop_on_slope
 	for i in range(max_slides):
 		
 		var found_collision := false
@@ -173,7 +180,7 @@ func gd_move_and_slide():
 
 			_set_collision_direction(collision)
 
-			if on_floor and stop_on_floor_slope and collision.remainder.slide(up_direction).length() <= 0.01:
+			if on_floor and floor_stop_on_slope and collision.remainder.slide(up_direction).length() <= 0.01:
 				if (body_velocity_normal.normalized() + up_direction).length() < 0.01 :
 					if collision.travel.length() > get_safe_margin():
 						position -= collision.travel.slide(up_direction)
@@ -226,7 +233,7 @@ func custom_snap():
 				floor_velocity = collision.collider_velocity
 				on_floor_body = collision.get_collider_rid()
 				
-				if stop_on_floor_slope:
+				if floor_stop_on_slope:
 					# move and collide may stray the object a bit because of pre un-stucking,
 					# so only ensure that motion happens on floor direction in this case.
 					#if travelled.length() > get_safe_margin() :

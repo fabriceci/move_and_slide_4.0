@@ -4,7 +4,7 @@ signal follow_platform(message)
 @onready var raycast := $RayCast2D
 var last_normal = Vector2.ZERO
 var last_motion = Vector2.ZERO
-var move_on_floor_only = true
+var floor_block_on_wall = true
 
 var auto := false
 func _ready():
@@ -12,11 +12,11 @@ func _ready():
 
 func _process(_delta):
 	floor_snap_length = Global.SNAP_FORCE
-	constant_speed_on_floor = Global.CONSTANT_SPEED_ON_FLOOR
+	floor_constant_speed = Global.CONSTANT_SPEED_ON_FLOOR
 	slide_on_ceiling = Global.SLIDE_ON_CEILING
-	stop_on_floor_slope = Global.STOP_ON_SLOPE
+	floor_stop_on_slope = Global.STOP_ON_SLOPE
 	up_direction = Global.UP_DIRECTION
-	move_on_floor_only = Global.MOVE_ON_FLOOR_ONLY
+	floor_block_on_wall = Global.MOVE_ON_FLOOR_ONLY
 	floor_max_angle = Global.FLOOR_MAX_ANGLE
 	update()
 
@@ -30,7 +30,6 @@ func _physics_process(delta):
 		floor_snap_length = 0
 	if Input.is_action_just_pressed('ui_accept') and (Global.INFINITE_JUMP or util_on_floor()):
 		linear_velocity.y = linear_velocity.y + Global.JUMP_FORCE
-
 	var speed = Global.RUN_SPEED if Input.is_action_pressed('run') and util_on_floor() else Global.NORMAL_SPEED
 	var direction = _get_direction()
 	if direction.x:
@@ -39,7 +38,7 @@ func _physics_process(delta):
 		linear_velocity.x = move_toward(linear_velocity.x, 0, Global.GROUND_FRICTION)
 	else:
 		linear_velocity.x = move_toward(linear_velocity.x, 0, Global.AIR_FRICTION)
-
+		
 	if Input.is_action_just_pressed("ui_down"):
 		auto = not auto
 	if auto:
@@ -50,8 +49,17 @@ func _physics_process(delta):
 		var dot = get_slide_collision(0).normalized().dot(vel_x)
 		if is_equal_approx(dot, -1):
 			linear_velocity.y = 70
-
 	custom_move_and_slide()
+	#var speed = Global.RUN_SPEED if Input.is_action_pressed('run') and util_on_floor() else Global.NORMAL_SPEED
+	#var direction = _get_direction()
+	#print("direction " + str(direction))
+	#if direction.x:
+#		linear_velocity.x = direction.x * speed
+#	if direction.y:
+#		linear_velocity.y = direction.y * speed
+
+#	linear_velocity.x = move_toward(linear_velocity.x, 0, Global.GROUND_FRICTION)
+#	linear_velocity.y = move_toward(linear_velocity.y, 0, Global.GROUND_FRICTION)
 
 var on_floor := false
 var platform_rid :=  RID()
@@ -136,7 +144,7 @@ func custom_move_and_collide(p_motion: Vector2, p_test_only: bool = false, p_can
 func custom_move_and_slide():
 	var current_platform_velocity = platform_velocity
 	if (on_floor or on_wall) and platform_rid.get_id():
-		var excluded = (exclude_body_layers & platform_layer) != 0
+		var excluded = (moving_platform_ignore_layers & platform_layer) != 0
 		if not excluded:
 			var bs := PhysicsServer2D.body_get_direct_state(platform_rid)
 			if bs:
@@ -156,7 +164,8 @@ func custom_move_and_slide():
 		emit_signal("follow_platform", "/")
 
 	var motion = linear_velocity * get_physics_process_delta_time()
-	var motion_slided_up = motion.slide(up_direction)
+
+	var motion_slided_up = motion.slide(up_direction) if up_direction != Vector2.ZERO else motion
 
 	var prev_platform_velocity = current_platform_velocity
 	var prev_floor_normal = floor_normal
@@ -168,7 +177,7 @@ func custom_move_and_slide():
 	platform_velocity = Vector2.ZERO
 
 	# No sliding on first attempt to keep floor motion stable when possible.
-	var sliding_enabled := not stop_on_floor_slope or up_direction == Vector2.ZERO
+	var sliding_enabled := not floor_stop_on_slope or up_direction == Vector2.ZERO
 	var can_apply_constant_speed := sliding_enabled
 	var first_slide := true
 	var vel_dir_facing_up := linear_velocity.dot(up_direction) > 0
@@ -181,7 +190,7 @@ func custom_move_and_slide():
 		if collision:
 			last_normal = collision.normal # for debug
 			_set_collision_direction(collision)
-			if on_floor and stop_on_floor_slope and (linear_velocity.normalized() + up_direction).length() < 0.01:
+			if on_floor and floor_stop_on_slope and (linear_velocity.normalized() + up_direction).length() < 0.01:
 				if collision.travel.length() > get_safe_margin():
 					position = position - collision.travel.slide(up_direction)
 				else:
@@ -193,7 +202,7 @@ func custom_move_and_slide():
 				motion = Vector2.ZERO
 				break
 			# move on floor only checks
-			if move_on_floor_only and on_wall and motion_slided_up.dot(collision.normal) <= 0:
+			if floor_block_on_wall and on_wall and motion_slided_up.dot(collision.normal) <= 0:
 				# constraints to move only
 				if was_on_floor and not on_floor and not vel_dir_facing_up:
 					if collision.travel.length() <= get_safe_margin(): # If the movement is large the body can be prevented from reaching the walls.
@@ -214,7 +223,7 @@ func custom_move_and_slide():
 				else:
 					motion = collision.remainder
 			# constant Speed when the slope is upward
-			elif constant_speed_on_floor and util_on_floor_only() and can_apply_constant_speed and was_on_floor and motion.dot(collision.normal) < 0:
+			elif floor_constant_speed and util_on_floor_only() and can_apply_constant_speed and was_on_floor and motion.dot(collision.normal) < 0:
 				can_apply_constant_speed = false
 				var slide: Vector2 = collision.remainder.slide(collision.normal).normalized()
 				if not slide.is_equal_approx(Vector2.ZERO):
@@ -237,7 +246,7 @@ func custom_move_and_slide():
 					linear_velocity = linear_velocity.slide(up_direction)
 					motion = motion.slide(up_direction)
 			last_travel = collision.travel
-		elif constant_speed_on_floor and first_slide and _on_floor_if_snapped():
+		elif floor_constant_speed and first_slide and _on_floor_if_snapped():
 			can_apply_constant_speed = false
 			sliding_enabled = true # avoid to apply two time constant speed
 			position = previous_pos
@@ -307,7 +316,7 @@ func floor_snap():
 			platform_rid = collision.get_collider_rid()
 			var travelled = collision.travel
 
-			if stop_on_floor_slope:
+			if floor_stop_on_slope:
 				# move and collide may stray the object a bit because of pre un-stucking,
 				# so only ensure that motion happens on floor direction in this case.
 				if travelled.length() > get_safe_margin() :

@@ -2,6 +2,8 @@ extends Node
 
 var use_default_move := true
 
+var MODE_TOP_DOWN := false
+
 # player
 var GRAVITY_FORCE := Vector2(0, 2000)
 var NORMAL_SPEED := 800
@@ -14,10 +16,10 @@ var SLOWDOWN_FALLING_WALL := false
 
 # move and slide
 var APPLY_SNAP := true
-var SNAP_FORCE := 50.0
-var CONSTANT_SPEED_ON_FLOOR := true
-var STOP_ON_SLOPE := true
-var MOVE_ON_FLOOR_ONLY := true
+var FLOOR_SNAP_LENGTH := 50.0
+var FLOOR_CONSTANT_SPEED := true
+var FLOOR_STOP_ON_SLOPE := true
+var FLOOR_BLOCK_ON_WALL := true
 var FLOOR_MAX_ANGLE := deg2rad(45.0)
 var UP_DIRECTION := Vector2.UP
 var SLIDE_ON_CEILING := true

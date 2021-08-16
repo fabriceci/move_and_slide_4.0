@@ -1,8 +1,8 @@
 extends Node2D
 
 @onready var n_pause_label = $CanvasLayer/Control/PauseLabel
-const PlayerClassic: PackedScene = preload("res://Player/Current/Player.tscn")
-const PlayerCustom: PackedScene = preload("res://Player/New/NewPlayer.tscn")
+@onready var n_pause_label_help = $CanvasLayer/Control/PauseLabelHelp
+const Player: PackedScene = preload("res://Player/Current/Player.tscn")
 var player_position := Vector2.ZERO
 var current_index := -1
 var tmp_air_friction = Global.AIR_FRICTION
@@ -69,15 +69,8 @@ func _on_ModeItemList_item_selected(index):
 func set_mode(index: int):
 	if current_index != index:
 		current_index = index
-		var _instance: CharacterBody2D
-		if index == 0 or index == 2:
-			_instance = PlayerCustom.instantiate()
-			ui_options(true)
-		else:
-			ui_options(false)
-		if index == 1 or index == 2:
-			_instance = PlayerClassic.instantiate()
-		if index == 2:
+		var _instance: CharacterBody2D = Player.instantiate()
+		if index == 1:
 			_instance.use_build_in = true
 		if has_node("Player"):
 			remove_child(get_node("Player"))
@@ -91,8 +84,16 @@ func on_platform_signal(message):
 	platform_velocity = message
 	
 func ui_options(p_visible: bool):
+	$CanvasLayer/Control/StopButton.visible = p_visible
+	$CanvasLayer/Control/SnapButton.visible = p_visible
+	$CanvasLayer/Control/MoveOnFloorOnly.visible = p_visible
+	$CanvasLayer/Control/InfiniteJumpButton.visible = p_visible
+	$CanvasLayer/Control/AirFrictionButton.visible = p_visible
+	$CanvasLayer/Control/SlowdownButton.visible = p_visible
 	$CanvasLayer/Control/ConstantButton.visible = p_visible
 	$CanvasLayer/Control/SlideCeilingButton.visible = p_visible
+	$CanvasLayer/Control/FloorMaxAngleLabel.visible = p_visible
+	$CanvasLayer/Control/FloorMaxAngleSlider.visible = p_visible
 
 func _on_FloorMaxAngleSlider_value_changed(value):
 	$CanvasLayer/Control/FloorMaxAngleLabel.text = "Floor max angle: %.0f°" % round(value) 
@@ -101,3 +102,7 @@ func _on_FloorMaxAngleSlider_value_changed(value):
 
 func _on_MoveOnFloorOnly_toggled(button_pressed):
 	Global.MOVE_ON_FLOOR_ONLY = button_pressed
+
+func _on_ModeTDButton_toggled(button_pressed):
+	Global.MODE_TOP_DOWN = button_pressed
+	ui_options(not button_pressed)

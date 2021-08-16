@@ -214,8 +214,7 @@ func _move_and_slide_top_down_game_mouv(motion):
 			break
 	
 func _move_and_slide_gravity_game_mouv(motion, current_platform_velocity):
-	var motion_slided_up = motion.slide(up_direction) if up_direction != Vector2.ZERO else motion	
-	var prev_platform_velocity = current_platform_velocity
+	var motion_slided_up = motion.slide(up_direction)
 	var prev_floor_normal = floor_normal
 	var prev_platform_rid: = platform_rid
 	var prev_platform_layer = platform_layer
@@ -258,7 +257,7 @@ func _move_and_slide_gravity_game_mouv(motion, current_platform_velocity):
 					on_floor = true
 					platform_rid = prev_platform_rid
 					platform_layer = prev_platform_layer
-					platform_velocity = prev_platform_velocity
+					platform_velocity = current_platform_velocity
 					floor_normal = prev_floor_normal
 					linear_velocity = Vector2.ZERO
 					motion = Vector2.ZERO

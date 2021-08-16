@@ -189,6 +189,7 @@ func _move_and_slide_top_down_game_mouv(motion):
 	platform_rid = RID()
 	floor_normal = Vector2.ZERO
 	platform_velocity = Vector2.ZERO
+	
 	var first_slide = true
 	for _i in range(max_slides):
 		var collision = custom_move_and_collide(motion, false, false)
@@ -213,9 +214,7 @@ func _move_and_slide_top_down_game_mouv(motion):
 			break
 	
 func _move_and_slide_gravity_game_mouv(motion, current_platform_velocity):
-
-	var motion_slided_up = motion.slide(up_direction) if up_direction != Vector2.ZERO else motion
-	
+	var motion_slided_up = motion.slide(up_direction) if up_direction != Vector2.ZERO else motion	
 	var prev_platform_velocity = current_platform_velocity
 	var prev_floor_normal = floor_normal
 	var prev_platform_rid: = platform_rid

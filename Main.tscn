@@ -431,15 +431,16 @@ __meta__ = {
 
 [node name="Label" type="Label" parent="CanvasLayer/Control"]
 offset_left = 232.0
-offset_top = 14.0
+offset_top = 5.0
 offset_right = 646.0
-offset_bottom = 65.0
+offset_bottom = 56.0
 theme_override_font_sizes/font_size = 10
-text = "SHIFT - run  | TAB - slowmode | P - pause mode  mode
+text = "SHIFT - run  | TAB - slowmode | P - pause mode 
 RED line - normal | GREEN line - velocity | ORANGE - motion
 
 "
 align = 1
+valign = 1
 structured_text_bidi_override_options = []
 script = null
 __meta__ = {

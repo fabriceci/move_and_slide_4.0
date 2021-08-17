@@ -1,7 +1,5 @@
 extends Node
 
-var MODE_TOP_DOWN := false
-
 # player
 var GRAVITY_FORCE := Vector2(0, 2000)
 var NORMAL_SPEED := 800
@@ -23,4 +21,5 @@ var UP_DIRECTION := Vector2.UP
 var SLIDE_ON_CEILING := true
 
  # top down
-var TD_MIN_SLIDE_ANGLE := 0.0
+var MODE_TOP_DOWN := false
+var TD_MIN_SLIDE_ANGLE := deg2rad(15.0)

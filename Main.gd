@@ -38,7 +38,7 @@ func _physics_process(_delta):
 		if $Player.on_floor:
 			$CanvasLayer/Control/HUDLabel.text += "\nFloor normal: " + str($Player.floor_normal)
 	$CanvasLayer/Control/HUDLabel.text += "\nPlatform: " + platform_velocity
-	if Global.MODE_TOP_DOWN:
+	if $Player.motion_mode == 1:
 		$CanvasLayer/Control/HUDLabel.text += "\nTop Down angle: %.1f °" % rad2deg($Player.debug_top_down_angle)
 
 func _on_StopButton_toggled(button_pressed):
@@ -109,6 +109,7 @@ func _on_MoveOnFloorOnly_toggled(button_pressed):
 
 func _on_ModeTDButton_toggled(button_pressed):
 	Global.MODE_TOP_DOWN = button_pressed
+	
 	ui_options(not button_pressed)
 
 func _on_TDMinSlideAngleSlider_value_changed(value):

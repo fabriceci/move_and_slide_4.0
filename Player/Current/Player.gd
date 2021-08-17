@@ -6,7 +6,6 @@ var debug_top_down_angle:= 0.0
 var debug_last_normal = Vector2.ZERO
 var debug_last_motion = Vector2.ZERO
 var debug_auto_move := false
-var mode_tps = true
 var use_build_in := false
 
 func _ready():
@@ -20,12 +19,14 @@ func _process(_delta):
 	up_direction = Global.UP_DIRECTION
 	floor_block_on_wall = Global.FLOOR_BLOCK_ON_WALL
 	floor_max_angle = Global.FLOOR_MAX_ANGLE
+	top_down_min_slide_angle = Global.TD_MIN_SLIDE_ANGLE
+	motion_mode = 1 if Global.MODE_TOP_DOWN else 0
 	update()
 
 var UP_DIRECTION := Vector2.UP
 
 func _physics_process(delta):
-	if not Global.MODE_TOP_DOWN:
+	if motion_mode == 0: # side mode
 		linear_velocity = linear_velocity + Global.GRAVITY_FORCE * delta
 		if Global.APPLY_SNAP:
 			floor_snap_length = Global.FLOOR_SNAP_LENGTH
@@ -56,7 +57,6 @@ func _physics_process(delta):
 		var speed = Global.RUN_SPEED if Input.is_action_pressed('run')  else Global.NORMAL_SPEED
 		var direction = _get_direction()
 		direction = direction.normalized()
-		up_direction = Vector2.ZERO
 
 		if direction.x:
 			linear_velocity.x = direction.x * speed
@@ -188,23 +188,22 @@ func custom_move_and_slide():
 	floor_normal = Vector2.ZERO
 	platform_velocity = Vector2.ZERO
 	
-	if up_direction == Vector2.ZERO:
-		_move_and_slide_top_down_game_mouv(motion)
+	if motion_mode == 1:
+		_move_and_slide_top_down_game(motion)
 	else:
-		_move_and_slide_gravity_game_mouv(motion, current_platform_velocity, prev_floor_normal, prev_platform_rid, prev_platform_layer)
+		_move_and_slide_side_game(motion, current_platform_velocity, prev_floor_normal, prev_platform_rid, prev_platform_layer)
 	
 	if not on_floor and not on_wall:
 		linear_velocity = linear_velocity + current_platform_velocity # Add last floor velocity when just left a moving platform
 
-func _move_and_slide_top_down_game_mouv(motion):
-	
+func _move_and_slide_top_down_game(motion):
 	var first_slide = true
 	for _i in range(max_slides):
 		var collision = custom_move_and_collide(motion, false, false)
 		if collision:
 			_set_collision_direction(collision)
 			debug_top_down_angle = collision.get_angle(-linear_velocity.normalized())
-			if Global.TD_MIN_SLIDE_ANGLE != 0 && collision.get_angle(-linear_velocity.normalized()) < Global.TD_MIN_SLIDE_ANGLE + FLOOR_ANGLE_THRESHOLD:
+			if top_down_min_slide_angle != 0 && collision.get_angle(-linear_velocity.normalized()) < top_down_min_slide_angle + FLOOR_ANGLE_THRESHOLD:
 				motion = Vector2.ZERO
 			elif first_slide:
 				var slide: Vector2 = collision.remainder.slide(collision.normal).normalized()
@@ -221,7 +220,7 @@ func _move_and_slide_top_down_game_mouv(motion):
 		if  not collision or motion.is_equal_approx(Vector2()):
 			break
 	
-func _move_and_slide_gravity_game_mouv(motion, current_platform_velocity, prev_floor_normal, prev_platform_rid, prev_platform_layer):
+func _move_and_slide_side_game(motion, current_platform_velocity, prev_floor_normal, prev_platform_rid, prev_platform_layer):
 	var motion_slided_up = motion.slide(up_direction)
 	
 	var vel_dir_facing_up := linear_velocity.dot(up_direction) > 0

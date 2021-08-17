@@ -409,13 +409,16 @@ __meta__ = {
 }
 
 [node name="FloorMaxAngleLabel" type="Label" parent="CanvasLayer/Control"]
-offset_left = 807.542
+offset_left = 803.542
 offset_top = 307.0
-offset_right = 929.542
+offset_right = 958.542
 offset_bottom = 333.0
-text = "Floor max angle"
+text = "Floor max angle: 45°"
 structured_text_bidi_override_options = []
 script = null
+__meta__ = {
+"_edit_use_anchors_": false
+}
 
 [node name="ModeTDButton" type="CheckButton" parent="CanvasLayer/Control"]
 offset_left = 336.705
@@ -429,7 +432,32 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="Label" type="Label" parent="CanvasLayer/Control"]
+[node name="TDMinSlideAngleLabel" type="Label" parent="CanvasLayer/Control"]
+visible = false
+offset_left = 806.542
+offset_top = 129.0
+offset_right = 928.542
+offset_bottom = 155.0
+text = "Min slide angle: 0°"
+structured_text_bidi_override_options = []
+script = null
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="TDMinSlideAngleSlider" type="HSlider" parent="CanvasLayer/Control"]
+visible = false
+offset_left = 960.0
+offset_top = 133.0
+offset_right = 1008.0
+offset_bottom = 149.0
+focus_mode = 0
+script = null
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Manual" type="Label" parent="CanvasLayer/Control"]
 offset_left = 232.0
 offset_top = 5.0
 offset_right = 646.0
@@ -458,3 +486,4 @@ __meta__ = {
 [connection signal="toggled" from="CanvasLayer/Control/SlowdownButton" to="." method="_on_SlowdownButton_toggled"]
 [connection signal="value_changed" from="CanvasLayer/Control/FloorMaxAngleSlider" to="." method="_on_FloorMaxAngleSlider_value_changed"]
 [connection signal="toggled" from="CanvasLayer/Control/ModeTDButton" to="." method="_on_ModeTDButton_toggled"]
+[connection signal="value_changed" from="CanvasLayer/Control/TDMinSlideAngleSlider" to="." method="_on_TDMinSlideAngleSlider_value_changed"]

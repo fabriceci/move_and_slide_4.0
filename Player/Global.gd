@@ -1,7 +1,5 @@
 extends Node
 
-var use_default_move := true
-
 var MODE_TOP_DOWN := false
 
 # player
@@ -23,3 +21,6 @@ var FLOOR_BLOCK_ON_WALL := true
 var FLOOR_MAX_ANGLE := deg2rad(45.0)
 var UP_DIRECTION := Vector2.UP
 var SLIDE_ON_CEILING := true
+
+ # top down
+var TD_MIN_SLIDE_ANGLE := 0.0

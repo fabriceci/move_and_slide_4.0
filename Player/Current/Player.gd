@@ -19,8 +19,8 @@ func _process(_delta):
 	up_direction = Global.UP_DIRECTION
 	floor_block_on_wall = Global.FLOOR_BLOCK_ON_WALL
 	floor_max_angle = Global.FLOOR_MAX_ANGLE
-	top_down_min_slide_angle = Global.TD_MIN_SLIDE_ANGLE
-	motion_mode = 1 if Global.MODE_TOP_DOWN else 0
+	free_mode_min_slide_angle = Global.FREE_MODE_MIN_SLIDE_ANGLE
+	motion_mode = 1 if Global.MODE_FREE else 0
 	update()
 
 var UP_DIRECTION := Vector2.UP
@@ -203,7 +203,7 @@ func _move_and_slide_top_down_game(motion):
 		if collision:
 			_set_collision_direction(collision)
 			debug_top_down_angle = collision.get_angle(-linear_velocity.normalized())
-			if top_down_min_slide_angle != 0 && collision.get_angle(-linear_velocity.normalized()) < top_down_min_slide_angle + FLOOR_ANGLE_THRESHOLD:
+			if free_mode_min_slide_angle != 0 && collision.get_angle(-linear_velocity.normalized()) < free_mode_min_slide_angle + FLOOR_ANGLE_THRESHOLD:
 				motion = Vector2.ZERO
 			elif first_slide:
 				var slide: Vector2 = collision.remainder.slide(collision.normal).normalized()

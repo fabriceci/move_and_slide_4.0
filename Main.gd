@@ -42,13 +42,13 @@ func _physics_process(_delta):
 		$CanvasLayer/Control/HUDLabel.text += "\nTop Down angle: %.1f °" % rad2deg($Player.debug_top_down_angle)
 
 func _on_StopButton_toggled(button_pressed):
-	Global.STOP_ON_SLOPE = button_pressed
+	Global.FLOOR_STOP_ON_SLOPE = button_pressed
 
 func _on_SnapButton_toggled(button_pressed):
 	Global.APPLY_SNAP = button_pressed
 
 func _on_ConstantButton_toggled(button_pressed):
-	Global.CONSTANT_SPEED_ON_FLOOR = button_pressed
+	Global.FLOOR_CONSTANT_SPEED = button_pressed
 
 func _on_SlideCeilingButton_toggled(button_pressed):
 	Global.SLIDE_ON_CEILING = button_pressed
@@ -105,13 +105,13 @@ func _on_FloorMaxAngleSlider_value_changed(value):
 
 
 func _on_MoveOnFloorOnly_toggled(button_pressed):
-	Global.MOVE_ON_FLOOR_ONLY = button_pressed
+	Global.FLOOR_BLOCK_ON_WALL = button_pressed
 
 func _on_ModeTDButton_toggled(button_pressed):
-	Global.MODE_TOP_DOWN = button_pressed
+	Global.MODE_FREE = button_pressed
 	
 	ui_options(not button_pressed)
 
 func _on_TDMinSlideAngleSlider_value_changed(value):
 	$CanvasLayer/Control/TDMinSlideAngleLabel.text = "Min slide angle: %.0f°" % round(value) 
-	Global.TD_MIN_SLIDE_ANGLE = deg2rad(value)
+	Global.FREE_MODE_MIN_SLIDE_ANGLE = deg2rad(value)

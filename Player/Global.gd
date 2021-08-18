@@ -21,5 +21,5 @@ var UP_DIRECTION := Vector2.UP
 var SLIDE_ON_CEILING := true
 
  # top down
-var MODE_TOP_DOWN := false
-var TD_MIN_SLIDE_ANGLE := deg2rad(15.0)
+var MODE_FREE := false
+var FREE_MODE_MIN_SLIDE_ANGLE := deg2rad(15.0)

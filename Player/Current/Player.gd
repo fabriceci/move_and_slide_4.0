@@ -104,7 +104,7 @@ func custom_move_and_collide(p_motion: Vector2, p_test_only: bool = false, p_can
 	var margin = get_safe_margin()
 
 	var result := PhysicsTestMotionResult2D.new()
-	var colliding := PhysicsServer2D.body_test_motion(get_rid(), gt, p_motion, margin, result, exlude)
+	var colliding := PhysicsServer2D.body_test_motion(get_rid(), gt, p_motion, margin, result, false, exlude)
 
 	var result_motion := result.travel
 	var result_remainder := result.remainder

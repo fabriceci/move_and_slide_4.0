@@ -161,9 +161,8 @@ script = null
 position = Vector2(2500, -100)
 script = null
 
-[node name="MovingPlatform2" type="StaticBody2D" parent="Level/Node2D"]
+[node name="MovingPlatform2" type="AnimatableBody2D" parent="Level/Node2D"]
 skew = 4.37114e-08
-kinematic_motion = true
 sync_to_physics = true
 script = null
 
@@ -198,9 +197,8 @@ script = null
 position = Vector2(0, -100)
 script = null
 
-[node name="MovingPlatform" type="StaticBody2D" parent="Level/Node2D2"]
+[node name="MovingPlatform" type="AnimatableBody2D" parent="Level/Node2D2"]
 skew = 4.37114e-08
-kinematic_motion = true
 sync_to_physics = true
 script = null
 

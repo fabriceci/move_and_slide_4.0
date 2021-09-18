@@ -8,7 +8,6 @@ var current_index := -1
 var tmp_air_friction = Global.AIR_FRICTION
 var slow_mo := [1.0, 0.05, 0.005]
 var slow_mo_idx := 0
-var platform_velocity = ""
 
 func _ready():
 	$CanvasLayer/Control/FloorMaxAngleLabel.text = "Floor max angle: %.0f°" % round(rad2deg(Global.FLOOR_MAX_ANGLE)) 
@@ -27,7 +26,7 @@ func _physics_process(_delta):
 
 	$CanvasLayer/Control/HUDLabel.text = "FPS " + str(Engine.get_frames_per_second()) + '\n'
 	$CanvasLayer/Control/HUDLabel.text += "Position " + str($Player.global_position) + '\n'
-	$CanvasLayer/Control/HUDLabel.text += "Linear Vel " + str(linear_vel) + ' Length %.0f \n' % round(linear_vel.length())
+	$CanvasLayer/Control/HUDLabel.text += "Real Vel " + str(linear_vel) + ' Length %.0f \n' % round(linear_vel.length())
 	$CanvasLayer/Control/HUDLabel.text += $Player.get_velocity_str() + '\n'
 	$CanvasLayer/Control/HUDLabel.text += "State: " + $Player.get_state_str()
 	if $Player.raycast.is_colliding():
@@ -37,7 +36,7 @@ func _physics_process(_delta):
 	if current_index == 0:
 		if $Player.on_floor:
 			$CanvasLayer/Control/HUDLabel.text += "\nFloor normal: " + str($Player.floor_normal)
-	$CanvasLayer/Control/HUDLabel.text += "\nPlatform: " + platform_velocity
+	$CanvasLayer/Control/HUDLabel.text += "\nPlatform: " + str($Player.util_platform_velocity())
 	if $Player.motion_mode == 1:
 		$CanvasLayer/Control/HUDLabel.text += "\nTop Down angle: %.1f °" % rad2deg($Player.debug_top_down_angle)
 
@@ -76,14 +75,9 @@ func set_mode(index: int):
 			_instance.use_build_in = true
 		if has_node("Player"):
 			remove_child(get_node("Player"))
-		if index == 0:
-			var _silent = _instance.connect("follow_platform", on_platform_signal)
 		add_child(_instance)
 		
 		_instance.position = player_position
-
-func on_platform_signal(message):
-	platform_velocity = message
 	
 func ui_options(p_visible: bool):
 	$CanvasLayer/Control/StopButton.visible = p_visible

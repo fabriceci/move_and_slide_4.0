@@ -1,5 +1,4 @@
 extends CharacterBody2D
-signal follow_platform(message)
 
 @onready var raycast := $RayCast2D
 var debug_top_down_angle:= 0.0
@@ -178,9 +177,6 @@ func custom_move_and_slide():
 
 	if not current_platform_velocity.is_equal_approx(Vector2.ZERO): # apply platform movement first
 		custom_move_and_collide(current_platform_velocity * get_physics_process_delta_time(), false, false, [platform_rid])
-		emit_signal("follow_platform", str(current_platform_velocity * get_physics_process_delta_time()))
-	else:
-		emit_signal("follow_platform", "/")
 
 	if motion_mode == 0:
 		_move_and_slide_grounded(current_platform_velocity)
@@ -420,6 +416,10 @@ func util_on_wall_only():
 	if use_build_in: return is_on_wall_only()
 	return on_wall and not on_floor and not on_ceiling
 
+func util_platform_velocity():
+	if use_build_in: return get_platform_velocity()
+	return platform_velocity
+	
 func get_state_str():
 	var state = []
 	if on_ceiling:

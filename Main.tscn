@@ -50,7 +50,8 @@ texture_region_size = Vector2i(64, 64)
 0:0/0/y_sort_origin = 0
 0:0/0/terrain_set = -1
 0:0/0/probability = 1.0
-0:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(-32, -32, 32, -32, 32, 32, -32, 32)
+0:0/0/physics_layer_0/linear_velocity = Vector2(0, 0)
+0:0/0/physics_layer_0/angular_velocity = 0.0
 
 [sub_resource type="TileSet" id="TileSet_0trwv"]
 tile_size = Vector2i(64, 64)
@@ -188,14 +189,14 @@ polygon = PackedVector2Array(190.421, -1396.88, 101.051, -1396.76, -73.0498, -14
 script = null
 
 [node name="Node2D3" type="Node2D" parent="Level"]
-position = Vector2(1796, 216)
+position = Vector2(1600, 216)
 script = null
 
 [node name="TileMap" type="TileMap" parent="Level/Node2D3"]
-position = Vector2(-1796, -216)
 skew = 4.37114e-08
 tile_set = SubResource( "TileSet_0trwv" )
 collision_animatable = true
+collision_visibility_mode = 1
 format = 2
 layer_0/tile_data = PackedInt32Array(0, 0, 0, 65536, 0, 0, 1, 0, 0, 65537, 0, 0, 2, 0, 0, 65538, 0, 0, 3, 0, 0, 65539, 0, 0, 4, 0, 0, 65540, 0, 0, 5, 0, 0, 65541, 0, 0, 6, 0, 0, 65542, 0, 0, 7, 0, 0, 65543, 0, 0, 8, 0, 0, 65544, 0, 0, 9, 0, 0, 65545, 0, 0, 10, 0, 0, 65546, 0, 0, 11, 0, 0, 65547, 0, 0, 12, 0, 0, 65548, 0, 0, 13, 0, 0, 65549, 0, 0, 196632, 0, 0, 196633, 0, 0, 196634, 0, 0, 196635, 0, 0, 196636, 0, 0, 196637, 0, 0, 196638, 0, 0, 196639, 0, 0)
 script = null

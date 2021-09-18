@@ -408,6 +408,10 @@ func util_on_wall():
 	if use_build_in: return is_on_wall()
 	return on_wall
 
+func util_on_ceiling():
+	if use_build_in: return is_on_ceiling()
+	return on_ceiling
+
 func util_on_floor_only():
 	if use_build_in: return is_on_floor_only()
 	return on_floor and not on_wall and not on_ceiling
@@ -422,11 +426,11 @@ func util_platform_velocity():
 	
 func get_state_str():
 	var state = []
-	if on_ceiling:
+	if util_on_ceiling():
 		state.append("ceil")
-	if on_floor:
+	if util_on_floor():
 		state.append("floor")
-	if on_wall:
+	if util_on_wall():
 		state.append("wall")
 
 	if state.size() == 0:

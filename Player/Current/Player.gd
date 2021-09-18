@@ -20,6 +20,7 @@ func _process(_delta):
 	floor_max_angle = Global.FLOOR_MAX_ANGLE
 	free_mode_min_slide_angle = Global.FREE_MODE_MIN_SLIDE_ANGLE
 	motion_mode = 1 if Global.MODE_FREE else 0
+
 	update()
 
 var UP_DIRECTION := Vector2.UP

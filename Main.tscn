@@ -1,4 +1,4 @@
-[gd_scene load_steps=14 format=3 uid="uid://cm0rtrl1isnu"]
+[gd_scene load_steps=16 format=3 uid="uid://cm0rtrl1isnu"]
 
 [ext_resource type="Script" path="res://Main.gd" id="2"]
 [ext_resource type="Script" path="res://Pause.gd" id="2_pn06j"]
@@ -50,8 +50,9 @@ texture_region_size = Vector2i(64, 64)
 0:0/0/y_sort_origin = 0
 0:0/0/terrain_set = -1
 0:0/0/probability = 1.0
+0:0/0/physics_layer_0/linear_velocity = Vector2(0, 0)
+0:0/0/physics_layer_0/angular_velocity = 0.0
 0:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(-32, -32, 32, -32, 32, 32, -32, 32)
-
 
 [sub_resource type="TileSet" id="TileSet_0trwv"]
 tile_size = Vector2i(64, 64)
@@ -77,6 +78,31 @@ tracks/0/keys = {
 "update": 0,
 "values": [Vector2(0, 0), Vector2(-150, -150), Vector2(0, 0)]
 }
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_ncr8l"]
+texture = ExtResource( "4" )
+texture_region_size = Vector2i(64, 64)
+0:0/0 = 0
+0:0/0/flip_h = false
+0:0/0/flip_v = false
+0:0/0/transpose = false
+0:0/0/texture_offset = Vector2i(0, 0)
+0:0/0/modulate = Color(1, 0.206739, 0.15448, 1)
+0:0/0/z_index = 0
+0:0/0/y_sort_origin = 0
+0:0/0/terrain_set = -1
+0:0/0/probability = 1.0
+0:0/0/physics_layer_0/linear_velocity = Vector2(200, 0)
+0:0/0/physics_layer_0/angular_velocity = 0.0
+0:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(-32, -32, 32, -32, 32, 32, -32, 32)
+
+[sub_resource type="TileSet" id="TileSet_pw7m5"]
+tile_size = Vector2i(64, 64)
+physics_layer_0/collision_layer = 1
+sources/0 = SubResource( "TileSetAtlasSource_ncr8l" )
+tile_proxies/source_level = []
+tile_proxies/coords_level = []
+tile_proxies/alternative_level = []
 
 [node name="Main" type="Node2D"]
 script = ExtResource( "2" )
@@ -197,7 +223,7 @@ skew = 4.37114e-08
 tile_set = SubResource( "TileSet_0trwv" )
 collision_animatable = true
 format = 2
-layer_0/tile_data = PackedInt32Array(0, 0, 0, 65536, 0, 0, 1, 0, 0, 65537, 0, 0, 2, 0, 0, 65538, 0, 0, 3, 0, 0, 65539, 0, 0, 4, 0, 0, 65540, 0, 0, 5, 0, 0, 65541, 0, 0, 6, 0, 0, 65542, 0, 0, 7, 0, 0, 65543, 0, 0, 8, 0, 0, 65544, 0, 0, 9, 0, 0, 65545, 0, 0, 10, 0, 0, 65546, 0, 0, 11, 0, 0, 65547, 0, 0, 12, 0, 0, 65548, 0, 0, 13, 0, 0, 65549, 0, 0, 196632, 0, 0, 196633, 0, 0, 196634, 0, 0, 196635, 0, 0, 196636, 0, 0, 196637, 0, 0, 196638, 0, 0, 196639, 0, 0)
+layer_0/tile_data = PackedInt32Array(0, 0, 0, 1, 0, 0, 2, 0, 0, 3, 0, 0, 4, 0, 0, 5, 0, 0)
 script = null
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="Level/Node2D3/TileMap"]
@@ -206,6 +232,18 @@ playback_process_mode = 0
 playback_speed = 1.5
 anims/default = SubResource( "Animation_pjxb6" )
 blend_times = []
+script = null
+
+[node name="Node2D4" type="Node2D" parent="Level"]
+position = Vector2(940, -160)
+script = null
+
+[node name="TileMap" type="TileMap" parent="Level/Node2D4"]
+position = Vector2(34, -13)
+skew = 4.37114e-08
+tile_set = SubResource( "TileSet_pw7m5" )
+format = 2
+layer_0/tile_data = PackedInt32Array(0, 0, 0, 1, 0, 0, 2, 0, 0, 3, 0, 0, 4, 0, 0, 5, 0, 0, 6, 0, 0)
 script = null
 
 [node name="CanvasLayer" type="CanvasLayer" parent="."]

@@ -223,7 +223,7 @@ skew = 4.37114e-08
 tile_set = SubResource( "TileSet_0trwv" )
 collision_animatable = true
 format = 2
-layer_0/tile_data = PackedInt32Array(0, 0, 0, 1, 0, 0, 2, 0, 0, 3, 0, 0, 4, 0, 0, 5, 0, 0)
+layer_0/tile_data = PackedInt32Array(0, 0, 0, 1, 0, 0, 2, 0, 0, -262141, 0, 0, -196605, 0, 0, -131069, 0, 0, -65533, 0, 0, 3, 0, 0, 4, 0, 0, 5, 0, 0, 6, 0, 0, 7, 0, 0)
 script = null
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="Level/Node2D3/TileMap"]

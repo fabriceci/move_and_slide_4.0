@@ -1,7 +1,7 @@
 [remap]
 
 importer="font_data_dynamic"
-type="FontData"
+type="FontFile"
 uid="uid://dpxmodm5rpxpj"
 path="res://.godot/imported/SourceCodePro-Regular.ttf-e09b86a4b69d9843a4080bdab30212cb.fontdata"
 
@@ -12,18 +12,21 @@ dest_files=["res://.godot/imported/SourceCodePro-Regular.ttf-e09b86a4b69d9843a40
 
 [params]
 
-antialiased=true
+Rendering=null
+antialiasing=1
+generate_mipmaps=false
 multichannel_signed_distance_field=false
 msdf_pixel_range=8
 msdf_size=48
 force_autohinter=false
 hinting=1
+subpixel_positioning=1
 oversampling=0.0
+Fallbacks=null
+fallbacks=[]
+Compress=null
 compress=true
-preload/char_ranges=PackedStringArray()
-preload/glyph_ranges=PackedStringArray()
-preload/configurations=PackedStringArray()
-support_overrides/language_enabled=PackedStringArray()
-support_overrides/language_disabled=PackedStringArray()
-support_overrides/script_enabled=PackedStringArray()
-support_overrides/script_disabled=PackedStringArray()
+preload=[]
+language_support={}
+script_support={}
+opentype_features={}
